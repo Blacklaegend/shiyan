@@ -21,7 +21,7 @@
 ```powershell
 git init
 git add .
-git commit -m "feat: shiyan quote page"
+git commit -m "feat: shiyian quote page"
 git branch -M main
 git remote add origin https://github.com/<你的用户名>/<仓库名>.git
 git push -u origin main
@@ -30,7 +30,7 @@ git push -u origin main
 也可以使用 GitHub CLI：
 
 ```powershell
-gh repo create shiyan --public --source=. --remote=origin --push
+gh repo create shiyian --public --source=. --remote=origin --push
 ```
 
 ---
@@ -86,11 +86,11 @@ https://<项目名>.pages.dev/
 
 ```powershell
 npx wrangler login
-npx wrangler pages project create shiyan
-npx wrangler pages deploy . --project-name shiyan
+npx wrangler pages project create shiyian
+npx wrangler pages deploy . --project-name shiyian
 ```
 
-如果项目名 `shiyan` 已被占用，换一个名字，并同步修改 `wrangler.toml` 里的 `name`。
+如果项目名 `shiyian` 已被占用，换一个名字，并同步修改 `wrangler.toml` 里的 `name`。
 
 `_headers` 会由 Cloudflare Pages 自动读取；GitHub Pages 会忽略它。
 
