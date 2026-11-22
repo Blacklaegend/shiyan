@@ -29,7 +29,7 @@ python -m http.server 8080
 - **解读长度**：简短 / 适中 / 详尽 / 不限。前三档约 120 / 280 / 600 字；不限字数时不发送 `max_tokens`，让模型写到完整为止（实际仍受所选模型的最大输出限制）。
 - **明暗主题**：右上角切换，自动记住选择。
 - **移动端字体**：内置 Noto Serif SC 子集（约 1.3MB，`fonts/shiyan-serif.woff2`），从本站加载，不依赖 Google Fonts；手机也有衬线中文字体。字体遵循 SIL OFL，见 `fonts/OFL.txt`。
-- **访问统计**：页面底部使用不蒜子（Busuanzi）站点访问量，按域名分别计数；服务不可用时显示占位符。
+- **访问统计**：Cloudflare Pages Function + D1，GitHub Pages 和 Cloudflare Pages 共用一个计数；底部显示合计访问量。
 - **用量与费用**：AI 面板底部显示本轮 tokens 和人民币费用；右上角图表按钮查看累计 tokens、累计费用、请求次数和最近记录。
 - **设置**：填写 API 地址、模型、API Key 即可；内置 DeepSeek Flash / Pro 与 OpenAI 预设。
 
@@ -46,10 +46,11 @@ python -m http.server 8080
 
 ## 访问统计说明
 
-- 底部「访问 N 次」使用 Busuanzi 的站点 PV，不经过自建服务器。
-- 这是第三方脚本；如果被拦截，访问量会显示 `—`，不影响页面其他功能。
-- `github.io` 和 `pages.dev` 是两个域名，访问量分别统计。
-- 如果需要完全自控、跨两个域名合并计数，可以改成 Cloudflare Worker + KV 的自建计数器。
+- 底部「访问 N 次」来自 `functions/api/visit.js`，数据存放在 Cloudflare D1。
+- `https://blacklaegend.github.io/shiyan/` 和 `https://shiyan-9ee.pages.dev/` 调用同一个接口、同一个 `site=shiyan`，所以是合计访问量。
+- 没有使用第三方统计脚本；D1 未绑定或接口不可用时显示 `—`。
+- 上线前需要在 Cloudflare 创建 D1 数据库、执行 `counter-schema.sql`，并在 Pages 项目里绑定变量名 `DB`；详见 [DEPLOY.md](DEPLOY.md)。
+- 当前只统计累计 PV，不保存每日历史；刷新页面会 +1。
 
 ## 历史与本地存储
 

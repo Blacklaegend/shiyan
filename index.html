@@ -1007,9 +1007,9 @@
 
   <footer class="footer">
     <span class="footer-left"><i class="status-dot" aria-hidden="true"></i><span><a class="footer-link" href="https://hitokoto.cn/" target="_blank" rel="noopener noreferrer">一言</a>公共接口 · 无需 API Key</span></span>
-    <span class="footer-visits" id="busuanzi_container_site_pv">
+    <span class="footer-visits" id="visitStat" title="GitHub Pages 与 Cloudflare Pages 合计">
       <svg class="icon" aria-hidden="true"><use href="#i-eye"></use></svg>
-      访问 <span id="busuanzi_value_site_pv">—</span> 次
+      访问 <span id="visitCount">—</span> 次
     </span>
     <span class="footer-right">拖选复制 · R 刷新 · Esc 关闭</span>
   </footer>
@@ -1299,6 +1299,7 @@
   'use strict';
 
   /* ============================== 配置 ============================== */
+  const VISIT_ENDPOINT = 'https://shiyan-9ee.pages.dev/api/visit';
   const STORAGE_SETTINGS = 'shiyan.settings.v1';
   const STORAGE_THEME = 'shiyan.theme.v1';
   const STORAGE_MOOD = 'shiyan.mood.v1';
@@ -4050,6 +4051,33 @@
     }
   });
 
+  /* ============================== 访问统计 ============================== */
+  async function loadVisitCount() {
+    const el = $('visitCount');
+    if (!el) return;
+    if (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname.endsWith('.localhost') || location.hostname === '127.0.0.1') {
+      return;
+    }
+    try {
+      const response = await fetch(VISIT_ENDPOINT, { method: 'POST', cache: 'no-store' });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const data = await response.json();
+      const count = Number(data?.count);
+      if (!Number.isFinite(count)) throw new Error('bad counter response');
+      el.textContent = count.toLocaleString('zh-CN');
+      try { localStorage.setItem('shiyan.visitCount.v1', String(count)); } catch (_) {}
+    } catch (_) {
+      try {
+        const cached = localStorage.getItem('shiyan.visitCount.v1');
+        if (cached && Number.isFinite(Number(cached))) {
+          el.textContent = Number(cached).toLocaleString('zh-CN');
+          return;
+        }
+      } catch (_) {}
+      el.textContent = '—';
+    }
+  }
+
   /* ============================== 启动 ============================== */
   initTheme();
   updateAIMeta();
@@ -4057,12 +4085,12 @@
   updateUsageSummary();
   updateSaveButton();
   updateBackButton();
+  loadVisitCount();
   // 页面重新加载时开始新的一句；保存过的旧对话仍在历史里，可随时点回去继续。
   const first = randomFallback(null);
   paintQuote(first);
   loadQuote({ initial: true });
 })();
 </script>
-<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>

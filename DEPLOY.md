@@ -102,7 +102,74 @@ npx wrangler pages deploy . --project-name shiyan
 - 点一次「AI 解读」，确认 AI 面板底部的本轮 token / 费用出现
 - 打开右上角用量按钮，确认累计记录正常
 
-## 五、本地数据说明
+## 五、访问统计（D1）
+
+页面底部访问量来自：
+
+```text
+functions/api/visit.js
+counter-schema.sql
+```
+
+GitHub Pages 和 Cloudflare Pages 都请求同一个接口：
+
+```text
+https://shiyan-9ee.pages.dev/api/visit
+```
+
+因此两个域名的访问量会合并计算。这个接口只返回累计 PV，不保存每日历史。
+
+### 1. 创建 D1 数据库
+
+在 Cloudflare 控制台：
+
+1. **Storage & Databases** → **D1 SQL Database** → **Create**
+2. 数据库名填 `shiyan-counter`
+3. 创建后进入数据库 → **Console**，执行 `counter-schema.sql` 里的 SQL
+
+或者用 Wrangler：
+
+```powershell
+npx wrangler d1 create shiyan-counter
+npx wrangler d1 execute shiyan-counter --remote --file=./counter-schema.sql
+```
+
+### 2. 给 Pages 项目绑定 D1
+
+1. Cloudflare Dashboard → **Workers & Pages**
+2. 打开 `shiyan-9ee` 这个 Pages 项目
+3. **Settings** → **Functions** → **D1 database bindings**
+4. 添加：
+   - Variable name：`DB`
+   - D1 database：`shiyan-counter`
+   - 同时给 Production 和 Preview 配置
+5. 保存并重新部署一次
+
+### 3. 验证
+
+浏览器打开：
+
+```text
+https://shiyan-9ee.pages.dev/api/visit
+```
+
+应返回类似：
+
+```json
+{"count":1}
+```
+
+POST 会 +1，GET 只读：
+
+```powershell
+curl.exe -X POST https://shiyan-9ee.pages.dev/api/visit
+```
+
+如果页面底部一直显示 `—`，通常是 D1 变量名不是 `DB`，或 Pages 项目尚未重新部署。
+
+> 页面里的接口地址写在 `index.html` 的 `VISIT_ENDPOINT` 常量里。如果以后 Cloudflare 项目改名或绑定自定义域名，需要同步改这个地址。
+
+## 六、本地数据说明
 
 GitHub Pages / Cloudflare Pages 都只是静态托管，没有服务器端数据库。页面的 API 配置、心境、句子历史、保存的对话和用量全部保存在浏览器的 `localStorage`：
 
@@ -111,7 +178,7 @@ GitHub Pages / Cloudflare Pages 都只是静态托管，没有服务器端数据
 - 换浏览器、换设备、无痕窗口、清空网站数据都会丢失。
 - 不需要、也不应该把 API Key 写进仓库。
 
-## 六、常见问题
+## 七、常见问题
 
 ### 页面能打开，但 AI 请求失败
 
