@@ -136,14 +136,29 @@ npx wrangler d1 execute shiyan-counter --remote --file=./counter-schema.sql
 
 ### 2. 给 Pages 项目绑定 D1
 
+仓库的 `wrangler.toml` 已经声明了绑定：
+
+```toml
+[[d1_databases]]
+binding = "DB"
+database_name = "shiyan-counter"
+database_id = "c0bc7ff5-acd8-46dc-97fa-b1b010618fad"
+```
+
+正常 Git 部署会自动读取它。如果换了数据库，需要同步修改这里的 `database_id`。
+
+也可以在 Cloudflare Dashboard 里再确认一次：
+
 1. Cloudflare Dashboard → **Workers & Pages**
-2. 打开 `shiyan-9ee` 这个 Pages 项目
-3. **Settings** → **Functions** → **D1 database bindings**
-4. 添加：
+2. 打开 `shiyan` 这个 Pages 项目
+3. **Settings** → **Bindings** → **D1 database bindings**
+4. 确认：
    - Variable name：`DB`
    - D1 database：`shiyan-counter`
-   - 同时给 Production 和 Preview 配置
+   - Production 和 Preview 都有
 5. 保存并重新部署一次
+
+> 注意：Pages 项目名是 `shiyan`，域名才是 `shiyan-9ee.pages.dev`。不要打开成同名的 Worker 服务。
 
 ### 3. 验证
 

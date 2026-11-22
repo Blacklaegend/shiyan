@@ -1,3 +1,8 @@
 name = "shiyan"
 compatibility_date = "2026-11-22"
 pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "shiyan-counter"
+database_id = "c0bc7ff5-acd8-46dc-97fa-b1b010618fad"

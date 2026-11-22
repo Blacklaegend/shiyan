@@ -49,7 +49,7 @@ python -m http.server 8080
 - 底部「访问 N 次」来自 `functions/api/visit.js`，数据存放在 Cloudflare D1。
 - `https://blacklaegend.github.io/shiyan/` 和 `https://shiyan-9ee.pages.dev/` 调用同一个接口、同一个 `site=shiyan`，所以是合计访问量。
 - 没有使用第三方统计脚本；D1 未绑定或接口不可用时显示 `—`。
-- 上线前需要在 Cloudflare 创建 D1 数据库、执行 `counter-schema.sql`，并在 Pages 项目里绑定变量名 `DB`；详见 [DEPLOY.md](DEPLOY.md)。
+- 上线前需要在 Cloudflare 创建 D1 数据库、执行 `counter-schema.sql`；`wrangler.toml` 已经声明了变量名为 `DB` 的 D1 绑定，详见 [DEPLOY.md](DEPLOY.md)。
 - 当前只统计累计 PV，不保存每日历史；刷新页面会 +1。
 
 ## 历史与本地存储
