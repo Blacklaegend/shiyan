@@ -9,7 +9,8 @@
 - `.github/workflows/pages.yml`：GitHub Pages 自动部署
 - `.nojekyll`：GitHub Pages 跳过 Jekyll
 - `wrangler.toml`：Cloudflare Pages / Wrangler 配置，项目名 `shiyan`
-- `_headers`：Cloudflare Pages 安全响应头
+- `_headers`：Cloudflare Pages 安全响应头与字体缓存
+- `fonts/`：内置 Noto Serif SC 子集（移动端衬线字体，OFL 授权）
 - `.gitignore`
 
 > 仓库里不包含任何 API Key。Key 只保存在访问者浏览器的 `localStorage`。

@@ -8,6 +8,7 @@
 <meta name="description" content="Shiyan（拾言）：一言句子，双击换句，一键复制，AI 解读与连续对话。可保存历史、回退上一句、结合此刻心境，支持 DeepSeek 深度思考。">
 <meta name="theme-color" content="#0c0e0d">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c0e0d'/%3E%3Crect x='9' y='9' width='46' height='46' rx='8' fill='none' stroke='%23c9a86a' stroke-width='1.2'/%3E%3Ctext x='32' y='43' font-size='28' font-family='Songti SC,SimSun,serif' fill='%23c9a86a' text-anchor='middle'%3E拾%3C/text%3E%3C/svg%3E">
+<link rel="preload" href="fonts/shiyan-serif.woff2" as="font" type="font/woff2" crossorigin>
 <script>
   try {
     if (localStorage.getItem('shiyan.theme.v1') === 'light') {
@@ -16,6 +17,13 @@
   } catch (_) {}
 </script>
 <style>
+  @font-face{
+    font-family:"Shiyan Serif";
+    src:url("fonts/shiyan-serif.woff2") format("woff2");
+    font-weight:500;
+    font-style:normal;
+    font-display:swap;
+  }
   :root{
     color-scheme: dark;
     --bg:#0c0e0d;
@@ -46,7 +54,7 @@
     --glow-1:rgba(78,120,103,.26);
     --glow-2:rgba(201,168,106,.15);
     --sans:"Avenir Next","Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-    --serif:"Source Han Serif SC","Noto Serif SC","Songti SC","STZhongsong","SimSun",serif;
+    --serif:"Shiyan Serif","Source Han Serif SC","Noto Serif SC","Songti SC","STZhongsong","SimSun",serif;
     --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
   }
   html[data-theme="light"]{
@@ -481,6 +489,11 @@
     font-size:9.5px;letter-spacing:.13em;color:var(--muted);opacity:.72;
   }
   .footer-left,.footer-right{display:flex;align-items:center;gap:8px}
+  .footer-visits{
+    display:inline-flex!important;align-items:center;gap:4px;color:var(--muted);
+    font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .footer-visits .icon{width:10px;height:10px;opacity:.7}
   .footer-link{color:inherit;text-decoration:none;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
   .footer-link:hover{color:var(--ink-soft);border-color:var(--hair-strong)}
   .status-dot{width:4px;height:4px;border-radius:50%;background:var(--jade);box-shadow:0 0 0 3px rgba(138,168,153,.1);animation:pulse 2.6s ease-in-out infinite}
@@ -992,6 +1005,10 @@
 
   <footer class="footer">
     <span class="footer-left"><i class="status-dot" aria-hidden="true"></i><span><a class="footer-link" href="https://hitokoto.cn/" target="_blank" rel="noopener noreferrer">一言</a>公共接口 · 无需 API Key</span></span>
+    <span class="footer-visits" id="busuanzi_container_site_pv">
+      <svg class="icon" aria-hidden="true"><use href="#i-eye"></use></svg>
+      访问 <span id="busuanzi_value_site_pv">—</span> 次
+    </span>
     <span class="footer-right">拖选复制 · R 刷新 · Esc 关闭</span>
   </footer>
 </div>
@@ -4011,5 +4028,6 @@
   loadQuote({ initial: true });
 })();
 </script>
+<script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>
