@@ -1,96 +1,93 @@
 # 部署指南
 
-这是一个纯静态页面，没有构建步骤。把本目录（`yiyan`）里的全部文件作为一个仓库的根目录即可。
+项目英文名：**shiyan**  
+仓库：<https://github.com/Blacklaegend/shiyan>  
+页面：纯静态单文件 `index.html`，没有构建步骤。
 
 已包含：
 
 - `.github/workflows/pages.yml`：GitHub Pages 自动部署
 - `.nojekyll`：GitHub Pages 跳过 Jekyll
-- `wrangler.toml`：Cloudflare Pages / Wrangler 配置
+- `wrangler.toml`：Cloudflare Pages / Wrangler 配置，项目名 `shiyan`
 - `_headers`：Cloudflare Pages 安全响应头
 - `.gitignore`
 
-> 不要把 API Key 写进文件。页面的 Key 存在访问者自己的浏览器 `localStorage` 里。
+> 仓库里不包含任何 API Key。Key 只保存在访问者浏览器的 `localStorage`。
 
 ---
 
-## 一、先推到 GitHub
+## 一、仓库
 
-在 `yiyan` 目录执行（把地址换成你自己的空仓库）：
+仓库已经创建：
+
+```text
+https://github.com/Blacklaegend/shiyan
+```
+
+以后本地修改后推送到 `main`：
 
 ```powershell
-git init
+git clone https://github.com/Blacklaegend/shiyan.git
+cd shiyan
+
+# 修改文件后
 git add .
-git commit -m "feat: shiyian quote page"
-git branch -M main
-git remote add origin https://github.com/<你的用户名>/<仓库名>.git
-git push -u origin main
+git commit -m "update shiyan"
+git push
 ```
 
-也可以使用 GitHub CLI：
-
-```powershell
-gh repo create shiyian --public --source=. --remote=origin --push
-```
+`index.html` 必须在仓库根目录。当前仓库就是这种结构。
 
 ---
 
 ## 二、部署到 GitHub Pages
 
-### 方式 A：GitHub Actions（推荐，仓库已带 workflow）
-
-1. 打开 GitHub 仓库 → **Settings** → **Pages**
-2. **Build and deployment** → **Source** 选择 **GitHub Actions**
-3. 推送 `main` 后，Actions 会自动运行 `Deploy static site to GitHub Pages`
-4. 在 Actions 或 Pages 设置里看到地址，通常是：
+1. 打开 <https://github.com/Blacklaegend/shiyan>
+2. **Settings** → **Pages**
+3. **Build and deployment** → **Source** 选择 **GitHub Actions**
+4. 到 **Actions** 页面运行或重新运行 `Deploy static site to GitHub Pages`
+5. 发布地址：
 
 ```text
-https://<用户名>.github.io/<仓库名>/
+https://blacklaegend.github.io/shiyan/
 ```
 
-### 方式 B：直接从分支发布
+也可以不用 Actions：Pages 里选择 **Deploy from a branch**，Branch 选 `main`，目录选 `/(root)`。
 
-如果不想用 Actions：
-
-1. **Settings** → **Pages** → **Source** 选择 **Deploy from a branch**
-2. Branch 选 `main`，目录选 `/(root)`
-3. 保存后等待发布
-
-> `index.html` 必须在仓库根目录。如果你把整个 `yiyan` 文件夹放进了仓库，而不是把文件夹里的内容作为根目录，请把 workflow 的 `path: .` 改成 `path: yiyan`，或在 Pages 里选择 `/yiyan`。
+> 仓库改名前如果已经开过 Pages，旧地址是 `.../shiyian/`；新地址是 `.../shiyan/`。这是两个不同的浏览器源，`localStorage` 数据不互通。
 
 ---
 
 ## 三、部署到 Cloudflare Pages
 
-### 方式 A：连接 GitHub 自动部署（推荐）
+### 方式 A：连接 GitHub（推荐）
 
-1. 先把仓库推到 GitHub（上面的步骤）
-2. 打开 [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
-3. 选择刚创建的仓库
-4. 构建设置：
+1. Cloudflare Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
+2. 选择 `Blacklaegend/shiyan`
+3. 构建设置：
    - Framework preset：**None**
    - Build command：留空
    - Build output directory：`/`（如果面板不接受，填 `.`）
-5. 点击 **Save and Deploy**
-6. 发布地址通常是：
+4. 点击 **Save and Deploy**
+5. 默认地址：
 
 ```text
-https://<项目名>.pages.dev/
+https://shiyan.pages.dev/
 ```
 
 之后每次 push 到 `main` 都会自动重新部署。
 
-### 方式 B：Wrangler 直接上传
+如果之前已经创建过名为 `shiyian` 的 Cloudflare 项目，建议新建一个名为 `shiyan` 的项目；Cloudflare Pages 项目名不等于 GitHub 仓库名，旧项目不会自动改名。
 
-适合不想在 Cloudflare 面板里点选、或想从本地直接发布：
+### 方式 B：Wrangler 直接上传
 
 ```powershell
 npx wrangler login
-npx wrangler pages project create shiyian
-npx wrangler pages deploy . --project-name shiyian
+npx wrangler pages project create shiyan
+npx wrangler pages deploy . --project-name shiyan
 ```
 
-如果项目名 `shiyian` 已被占用，换一个名字，并同步修改 `wrangler.toml` 里的 `name`。
+`wrangler.toml` 里的 `name` 也已经是 `shiyan`。
 
 `_headers` 会由 Cloudflare Pages 自动读取；GitHub Pages 会忽略它。
 
@@ -125,7 +122,7 @@ GitHub Pages / Cloudflare Pages 都只是静态托管，没有服务器端数据
 
 ### Cloudflare 部署后没有样式
 
-确认 Build output directory 指向包含 `index.html` 的目录（本仓库根目录为 `/` 或 `.`），并且没有把 `yiyan` 子目录当成输出目录。
+确认 Build output directory 指向包含 `index.html` 的目录（本仓库根目录为 `/` 或 `.`），并且没有把子目录当成输出目录。
 
 ### 费用和官方账单不完全一致
 
