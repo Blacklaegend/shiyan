@@ -54,7 +54,7 @@ https://blacklaegend.github.io/shiyan/
 
 也可以不用 Actions：Pages 里选择 **Deploy from a branch**，Branch 选 `main`，目录选 `/(root)`。
 
-> 仓库改名前如果已经开过 Pages，旧地址是 `.../shiyian/`；新地址是 `.../shiyan/`。这是两个不同的浏览器源，`localStorage` 数据不互通。
+> 如果之前已经用旧仓库名开过 Pages，请重新确认新地址 `.../shiyan/`。旧地址和新地址是两个不同的浏览器源，`localStorage` 数据不互通。
 
 ---
 
@@ -77,7 +77,7 @@ https://shiyan.pages.dev/
 
 之后每次 push 到 `main` 都会自动重新部署。
 
-如果之前已经创建过名为 `shiyian` 的 Cloudflare 项目，建议新建一个名为 `shiyan` 的项目；Cloudflare Pages 项目名不等于 GitHub 仓库名，旧项目不会自动改名。
+如果之前已经创建过旧名字的 Cloudflare 项目，建议新建一个名为 `shiyan` 的项目；Cloudflare Pages 项目名不等于 GitHub 仓库名，旧项目不会自动改名。
 
 ### 方式 B：Wrangler 直接上传
 
