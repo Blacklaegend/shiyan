@@ -2842,7 +2842,7 @@
     els.aiSaveBtn.classList.toggle('active', canSave && state.conversationSaved);
     if (label) label.textContent = state.conversationSaved ? '已保存' : '保存';
     els.aiSaveBtn.title = state.conversationSaved
-      ? '对话已保存在本机历史'
+      ? '对话已自动保存在本机历史'
       : '保存对话到本机历史';
   }
 
@@ -3192,7 +3192,7 @@
           quoteText: state.aiQuoteText,
           kind: '对话'
         });
-        if (state.conversationSaved) saveCurrentConversation(false);
+        saveCurrentConversation(false);
         updateSaveButton();
       } catch (error) {
         if (renderFrame) cancelAnimationFrame(renderFrame);
@@ -3693,6 +3693,8 @@
       });
       showChatComposer();
       updateSaveButton();
+      // 完成即自动保存，回到历史/上一句时才能看到这次对话。
+      saveCurrentConversation(false);
     } catch (error) {
       if (version !== state.conversationVersion) return;
       if (error.name === 'AbortError') {
