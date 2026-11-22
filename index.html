@@ -1787,7 +1787,8 @@
       if (!url.searchParams.has('encode')) url.searchParams.set('encode', 'json');
       if (!url.searchParams.has('charset')) url.searchParams.set('charset', 'utf-8');
       if (!url.searchParams.has('c')) {
-        ['d', 'i', 'k'].forEach((c) => url.searchParams.append('c', c));
+        // 不限定分类：动画、漫画、游戏、文学、原创、网络、其他、影视、诗词、哲学、段子等全部参与随机。
+        ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l'].forEach((c) => url.searchParams.append('c', c));
       }
 
       for (let attempt = 0; attempt < 2; attempt++) {
