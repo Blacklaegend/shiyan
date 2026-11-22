@@ -213,21 +213,20 @@
   .quote-meta cite:empty{display:none}
   .quote-meta .author:empty{display:none}
 
-  .quote-assist{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:19px}
   .dbl-hint{
-    margin:0;display:flex;align-items:center;justify-content:center;gap:6px;
+    margin:19px 0 0;display:flex;align-items:center;justify-content:center;gap:6px;
     font-size:10.5px;letter-spacing:.14em;color:var(--muted);opacity:.7;
   }
   .dbl-hint .icon{width:12px;height:12px}
-  .back-link{
-    display:inline-flex;align-items:center;gap:4px;padding:4px 9px;
-    border:1px solid var(--hair);border-radius:999px;background:var(--glass);
-    color:var(--muted);font:inherit;font-size:10.5px;
-    letter-spacing:.08em;cursor:pointer;opacity:.85;transition:color .2s,opacity .2s,border-color .2s;
+  .back-action{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    margin-top:18px;padding:8px 14px;border:1px solid var(--hair);border-radius:999px;
+    background:var(--glass);color:var(--muted);font:inherit;font-size:10.5px;
+    letter-spacing:.06em;cursor:pointer;transition:color .2s,border-color .2s,background .2s;
   }
-  .back-link[hidden]{display:none}
-  .back-link:hover{color:var(--gold);opacity:1;border-color:var(--gold-line)}
-  .back-link .icon{width:12px;height:12px}
+  .back-action[hidden]{display:none}
+  .back-action:hover{color:var(--gold);border-color:var(--gold-line);background:var(--glass-strong)}
+  .back-action .icon{width:12px;height:12px}
 
   .actions{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:clamp(32px,5vh,48px)}
   .btn{
@@ -695,6 +694,10 @@
     font-size:8px;letter-spacing:.04em;white-space:nowrap;
   }
   .history-saved .icon{width:9px;height:9px}
+  .history-draft{
+    display:inline-flex;align-items:center;padding:3px 6px;border-radius:999px;
+    border:1px solid var(--hair);color:var(--muted);font-size:8px;letter-spacing:.04em;
+  }
   .history-current{font-size:8px;color:var(--muted);letter-spacing:.06em}
   .history-empty{padding:30px 10px;text-align:center;font-size:11px;line-height:1.8;color:var(--muted)}
   .mood-modal{width:min(560px,100%)}
@@ -791,7 +794,7 @@
     .usage-price-grid{grid-template-columns:1fr;gap:0}
     .usage-history{max-height:220px}
     .ai-foot{gap:5px;padding:10px 18px}
-    .quote-assist{gap:10px}
+    .back-action{max-width:100%;margin-top:16px}
     .chat-msg{max-width:96%}
     .chat-msg.assistant{max-width:100%}
     .chat-input{font-size:12px}
@@ -882,16 +885,10 @@
             <cite id="quoteSource"></cite>
           </footer>
         </blockquote>
-        <div class="quote-assist">
-          <p class="dbl-hint">
-            <svg class="icon" aria-hidden="true"><use href="#i-mouse"></use></svg>
-            双击换一句 · 拖选可复制
-          </p>
-          <button class="back-link" id="backBtn" type="button" hidden>
-            <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
-            上一句
-          </button>
-        </div>
+        <p class="dbl-hint">
+          <svg class="icon" aria-hidden="true"><use href="#i-mouse"></use></svg>
+          双击换一句 · 拖选可复制
+        </p>
       </div>
 
       <div class="actions">
@@ -914,6 +911,11 @@
           AI 解读
         </button>
       </div>
+
+      <button class="back-action" id="backBtn" type="button" title="回到上一句，并恢复那一句的 AI 对话" hidden>
+        <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
+        回到上一句与 AI 对话
+      </button>
 
       <button class="context-strip" id="contextStrip" type="button" title="修改心境" hidden>
         <span class="context-strip-key">此刻</span>
@@ -1516,6 +1518,8 @@
   let moodContext = loadMoodContext();
   let usageStats = loadUsageStats();
   let quoteHistory = loadQuoteHistory();
+  // 本次会话中未保存的对话草稿；刷新页面后清空，不写入 localStorage。
+  const conversationDrafts = new Map();
   const state = {
     quote: null,
     quoteSeq: 0,
@@ -1767,6 +1771,7 @@
     state.quotePending = false;
     els.refreshBtn.classList.add('is-spinning');
     els.refreshBtn.disabled = true;
+    cacheCurrentConversation();
     clearConversation();
 
     const controller = new AbortController();
@@ -1945,7 +1950,10 @@
     const saved = saveMoodContextToStorage(moodContext);
     closeMood();
     updateMoodUI();
-    if (changed && aiWasOpen) clearConversation();
+    if (changed && aiWasOpen) {
+      cacheCurrentConversation();
+      clearConversation();
+    }
     if (!hasMoodContext()) {
       toast('已清除心境，只解读句子');
     } else if (changed && aiWasOpen) {
@@ -2461,6 +2469,15 @@
     els.backBtn.hidden = !(index >= 0 && index + 1 < quoteHistory.length);
   }
 
+  function cacheCurrentConversation() {
+    if (!state.currentEntryId || state.llmMessages.length < 3) return;
+    conversationDrafts.set(state.currentEntryId, {
+      messages: sanitizeLLMMessages(state.llmMessages),
+      saved: !!state.conversationSaved,
+      context: snapshotMood()
+    });
+  }
+
   function addHistoryEntry(quote) {
     const entry = {
       id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
@@ -2496,6 +2513,7 @@
       const meta = quoteMetaText(entry.quote);
       const active = entry.id === state.currentEntryId;
       const saved = entry.saved && entry.llmMessages.length >= 3;
+      const draft = !saved && (conversationDrafts.get(entry.id)?.messages?.length || 0) >= 3;
       return (
         '<button class="history-item' + (active ? ' active' : '') + '" type="button" data-history-id="' + escapeHTML(entry.id) + '">' +
           '<div class="history-item-main">' +
@@ -2504,6 +2522,7 @@
           '</div>' +
           '<div class="history-side">' +
             (saved ? '<span class="history-saved"><svg class="icon"><use href="#i-bookmark"></use></svg>对话</span>' : '') +
+            (draft ? '<span class="history-draft">草稿</span>' : '') +
             (active ? '<span class="history-current">当前</span>' : '') +
           '</div>' +
         '</button>'
@@ -2533,21 +2552,25 @@
 
   function loadHistoryEntry(entry, index) {
     if (!entry) return;
+    cacheCurrentConversation();
     closeHistory();
+    const draft = conversationDrafts.get(entry.id);
+    const saved = entry.saved && entry.llmMessages.length >= 3;
+    const messages = saved ? entry.llmMessages : (draft?.messages || []);
+    const context = saved ? entry.context : (draft?.context || null);
     state.currentEntryId = entry.id;
     state.historyCursor = index;
     paintQuote(entry.quote);
-    const saved = entry.saved && entry.llmMessages.length >= 3;
-    if (saved) {
-      if (entry.context) {
+    if (messages.length >= 3) {
+      if (context) {
         moodContext = {
-          moods: Array.isArray(entry.context.moods) ? entry.context.moods.slice() : [],
-          event: typeof entry.context.event === 'string' ? entry.context.event : ''
+          moods: Array.isArray(context.moods) ? context.moods.slice() : [],
+          event: typeof context.event === 'string' ? context.event : ''
         };
         saveMoodContextToStorage(moodContext);
         updateMoodUI();
       }
-      restoreConversation(entry);
+      restoreConversation({ ...entry, llmMessages: messages, context }, { fromDraft: !saved });
     } else {
       clearConversation();
     }
@@ -2591,6 +2614,7 @@
     }
     disarmHistoryClear();
     quoteHistory = [];
+    conversationDrafts.clear();
     state.currentEntryId = null;
     state.historyCursor = -1;
     state.conversationSaved = false;
@@ -2832,12 +2856,23 @@
     entry.model = aiModelLabel();
     const saved = persistQuoteHistory();
     if (!saved) {
+      entry.saved = false;
       state.conversationSaved = false;
+      conversationDrafts.set(entry.id, {
+        messages: sanitizeLLMMessages(state.llmMessages),
+        saved: false,
+        context: snapshotMood()
+      });
       updateSaveButton();
       if (showToast) toast('本地空间不足，对话没有保存');
       return;
     }
     state.conversationSaved = true;
+    conversationDrafts.set(entry.id, {
+      messages: entry.llmMessages,
+      saved: true,
+      context: entry.context
+    });
     updateSaveButton();
     updateHistoryListIfOpen();
     if (showToast) toast('对话已保存到本机历史');
@@ -2916,7 +2951,7 @@
     els.chatThread.hidden = !followUps.length;
   }
 
-  function restoreConversation(entry) {
+  function restoreConversation(entry, { fromDraft = false } = {}) {
     const messages = sanitizeLLMMessages(entry.llmMessages);
     if (messages.length < 3) {
       clearConversation();
@@ -2924,7 +2959,7 @@
     }
     clearConversation();
     state.llmMessages = messages;
-    state.conversationSaved = true;
+    state.conversationSaved = !fromDraft;
     state.aiRaw = messages[2].content;
     state.aiReasoning = messages[2].reasoning || '';
     state.aiQuoteText = entry.quote.text;
