@@ -1,0 +1,4012 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>拾言 · 一句话的留白</title>
+<meta name="description" content="一言句子，双击换句，一键复制，AI 解读与连续对话。可保存历史、回退上一句、结合此刻心境，支持 DeepSeek 深度思考。">
+<meta name="theme-color" content="#0c0e0d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230c0e0d'/%3E%3Crect x='9' y='9' width='46' height='46' rx='8' fill='none' stroke='%23c9a86a' stroke-width='1.2'/%3E%3Ctext x='32' y='43' font-size='28' font-family='Songti SC,SimSun,serif' fill='%23c9a86a' text-anchor='middle'%3E拾%3C/text%3E%3C/svg%3E">
+<script>
+  try {
+    if (localStorage.getItem('shiyan.theme.v1') === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  } catch (_) {}
+</script>
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#0c0e0d;
+    --bg-2:#101311;
+    --ink:#ece7db;
+    --ink-soft:#c7c2b5;
+    --muted:#85877d;
+    --gold:#c9a86a;
+    --gold-bright:#d8ba82;
+    --gold-ink:#17130b;
+    --gold-line:rgba(201,168,106,.32);
+    --gold-soft:rgba(201,168,106,.10);
+    --selection:rgba(201,168,106,.30);
+    --jade:#8aa899;
+    --hair:rgba(236,231,219,.105);
+    --hair-strong:rgba(236,231,219,.2);
+    --glass:rgba(255,255,255,.035);
+    --glass-strong:rgba(255,255,255,.065);
+    --panel:rgba(19,23,20,.58);
+    --modal-bg:#121513;
+    --modal-foot:rgba(255,255,255,.018);
+    --input-bg:rgba(255,255,255,.032);
+    --code-bg:rgba(255,255,255,.055);
+    --pre-bg:rgba(0,0,0,.26);
+    --toast-bg:#ece7db;
+    --toast-ink:#14160f;
+    --shadow:0 30px 90px rgba(0,0,0,.48);
+    --glow-1:rgba(78,120,103,.26);
+    --glow-2:rgba(201,168,106,.15);
+    --sans:"Avenir Next","Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    --serif:"Source Han Serif SC","Noto Serif SC","Songti SC","STZhongsong","SimSun",serif;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  }
+  html[data-theme="light"]{
+    color-scheme: light;
+    --bg:#f2efe7;
+    --bg-2:#eae6db;
+    --ink:#20231f;
+    --ink-soft:#454a43;
+    --muted:#7e8077;
+    --gold:#8e6a2e;
+    --gold-bright:#a9823d;
+    --gold-ink:#fffdf7;
+    --gold-line:rgba(142,106,46,.30);
+    --gold-soft:rgba(142,106,46,.085);
+    --selection:rgba(142,106,46,.24);
+    --jade:#587c6a;
+    --hair:rgba(32,35,31,.11);
+    --hair-strong:rgba(32,35,31,.21);
+    --glass:rgba(255,255,255,.38);
+    --glass-strong:rgba(255,255,255,.65);
+    --panel:rgba(255,255,255,.52);
+    --modal-bg:#faf8f2;
+    --modal-foot:rgba(255,255,255,.5);
+    --input-bg:rgba(255,255,255,.72);
+    --code-bg:rgba(32,35,31,.055);
+    --pre-bg:rgba(32,35,31,.04);
+    --toast-bg:#20231f;
+    --toast-ink:#f4f0e6;
+    --shadow:0 30px 90px rgba(48,44,33,.14);
+    --glow-1:rgba(112,146,127,.22);
+    --glow-2:rgba(190,151,84,.17);
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{height:100%}
+  body{
+    margin:0;
+    min-height:100%;
+    background:var(--bg-2);
+    color:var(--ink);
+    font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  body.modal-open{overflow:hidden}
+  button,input{font:inherit}
+  button{color:inherit}
+  a{color:inherit}
+  ::selection{background:var(--selection);color:var(--ink)}
+  :focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .icon{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+  .sprite{position:absolute;width:0;height:0;overflow:hidden}
+
+  /* ---------- atmosphere ---------- */
+  .backdrop{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%)}
+  .backdrop::before{
+    content:"";
+    position:absolute;inset:-30%;
+    background:
+      radial-gradient(ellipse 55% 45% at 18% 8%,var(--glow-1),transparent 62%),
+      radial-gradient(ellipse 48% 40% at 84% 18%,var(--glow-2),transparent 64%),
+      radial-gradient(ellipse 60% 45% at 52% 108%,rgba(70,86,77,.22),transparent 66%);
+    filter:blur(24px);
+    animation:drift 34s ease-in-out infinite alternate;
+  }
+  .backdrop::after{
+    content:"";
+    position:absolute;inset:0;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+  }
+  .hairline-v{
+    position:fixed;top:0;bottom:0;left:50%;width:min(1180px,100%);transform:translateX(-50%);
+    border-left:1px solid rgba(236,231,219,.032);border-right:1px solid rgba(236,231,219,.032);pointer-events:none;z-index:0;
+  }
+  html[data-theme="light"] .hairline-v{border-color:rgba(32,35,31,.035)}
+
+  .page{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100svh}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    width:min(1180px,100%);margin:0 auto;
+    padding:27px clamp(22px,4vw,44px) 0;
+    display:flex;align-items:center;justify-content:space-between;gap:18px;
+  }
+  .brand{display:flex;align-items:center;gap:13px;text-decoration:none;user-select:none}
+  .brand-seal{
+    width:39px;height:39px;display:grid;place-items:center;
+    border:1px solid var(--gold-line);border-radius:11px;
+    color:var(--gold);font-family:var(--serif);font-size:19px;
+    background:linear-gradient(155deg,var(--gold-soft),transparent 70%);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.015);
+  }
+  .brand-text{display:flex;flex-direction:column;gap:4px}
+  .brand-name{font-family:var(--serif);font-size:18px;line-height:1;letter-spacing:.3em;color:var(--ink)}
+  .brand-sub{font-size:8px;line-height:1;letter-spacing:.245em;color:var(--muted);white-space:nowrap}
+  .top-actions{display:flex;align-items:center;gap:9px}
+  .icon-btn{
+    position:relative;
+    width:38px;height:38px;display:grid;place-items:center;
+    border:1px solid var(--hair);border-radius:50%;
+    background:var(--glass);color:var(--muted);cursor:pointer;
+    transition:color .25s,border-color .25s,background .25s,transform .25s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .usage-dot{
+    position:absolute;top:8px;right:8px;width:5px;height:5px;border-radius:50%;
+    background:var(--gold);box-shadow:0 0 0 2px var(--bg);
+  }
+  .icon-btn:hover{color:var(--ink);border-color:var(--hair-strong);background:var(--glass-strong);transform:translateY(-1px)}
+  .icon-btn .icon{width:16px;height:16px}
+  html[data-theme="dark"] .icon-sun{display:none}
+  html[data-theme="light"] .icon-moon{display:none}
+
+  /* ---------- main stage ---------- */
+  .main{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    width:100%;padding:clamp(38px,7vh,82px) clamp(20px,4vw,44px) 42px;
+  }
+  .stage{width:100%;max-width:920px;text-align:center;animation:fadeUp .85s cubic-bezier(.2,.75,.25,1) both}
+  .kicker{
+    display:flex;align-items:center;justify-content:center;gap:16px;
+    margin-bottom:clamp(30px,5vh,48px);color:var(--muted);
+    font-size:10px;letter-spacing:.4em;text-transform:uppercase;
+  }
+  .kicker b{font-weight:500;color:var(--gold);letter-spacing:.32em;white-space:nowrap}
+  .kicker i{display:block;width:38px;height:1px;background:linear-gradient(90deg,transparent,var(--hair-strong))}
+  .kicker i:last-child{background:linear-gradient(90deg,var(--hair-strong),transparent)}
+
+  .quote-shell{position:relative;max-width:900px;margin:0 auto;padding:12px 0 0}
+  .quote-mark{
+    position:absolute;top:-58px;left:50%;transform:translateX(-50%);
+    font-family:Georgia,"Times New Roman",serif;font-size:172px;line-height:1;
+    color:var(--gold);opacity:.09;pointer-events:none;user-select:none;
+  }
+  .quote{margin:0;transition:opacity .18s ease,transform .18s ease,filter .18s ease}
+  .quote-shell.is-swapping .quote{opacity:0;transform:translateY(9px);filter:blur(3px)}
+  .quote p{
+    margin:0;color:var(--ink);font-family:var(--serif);font-weight:500;
+    font-size:clamp(27px,4vw,42px);line-height:1.72;letter-spacing:.035em;
+    text-wrap:balance;user-select:text;cursor:text;word-break:keep-all;overflow-wrap:anywhere;
+  }
+  .quote p.is-long{font-size:clamp(24px,3.2vw,34px);line-height:1.78}
+  .quote p.is-xlong{font-size:clamp(21px,2.65vw,29px);line-height:1.82;letter-spacing:.02em}
+  .quote-meta{
+    margin-top:clamp(24px,3.4vh,34px);
+    display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;
+    font-size:12.5px;letter-spacing:.1em;color:var(--muted);
+    user-select:text;
+  }
+  .quote-meta .dash{color:var(--gold);opacity:.75;letter-spacing:0}
+  .quote-meta .author{color:var(--ink-soft)}
+  .quote-meta cite{font-style:normal;color:var(--muted)}
+  .quote-meta cite:empty{display:none}
+  .quote-meta .author:empty{display:none}
+
+  .quote-assist{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:19px}
+  .dbl-hint{
+    margin:0;display:flex;align-items:center;justify-content:center;gap:6px;
+    font-size:10.5px;letter-spacing:.14em;color:var(--muted);opacity:.7;
+  }
+  .dbl-hint .icon{width:12px;height:12px}
+  .back-link{
+    display:inline-flex;align-items:center;gap:4px;padding:4px 9px;
+    border:1px solid var(--hair);border-radius:999px;background:var(--glass);
+    color:var(--muted);font:inherit;font-size:10.5px;
+    letter-spacing:.08em;cursor:pointer;opacity:.85;transition:color .2s,opacity .2s,border-color .2s;
+  }
+  .back-link[hidden]{display:none}
+  .back-link:hover{color:var(--gold);opacity:1;border-color:var(--gold-line)}
+  .back-link .icon{width:12px;height:12px}
+
+  .actions{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:clamp(32px,5vh,48px)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    height:44px;padding:0 18px;border:1px solid transparent;border-radius:999px;
+    font-size:13px;letter-spacing:.035em;background:none;cursor:pointer;
+    transition:transform .25s,border-color .25s,background .25s,color .25s,box-shadow .25s,opacity .25s;
+    -webkit-tap-highlight-color:transparent;white-space:nowrap;
+  }
+  .btn .icon{width:16px;height:16px}
+  .btn:disabled{opacity:.55;cursor:default;transform:none!important}
+  .btn-ghost{color:var(--ink-soft);border-color:var(--hair);background:var(--glass);backdrop-filter:blur(10px)}
+  .btn-ghost:hover{border-color:var(--hair-strong);background:var(--glass-strong);color:var(--ink);transform:translateY(-1px)}
+  .btn-primary{
+    color:var(--gold-ink);background:var(--gold);border-color:var(--gold);
+    font-weight:600;box-shadow:0 8px 30px rgba(201,168,106,.16);
+  }
+  html[data-theme="light"] .btn-primary{box-shadow:0 8px 26px rgba(142,106,46,.18)}
+  .btn-primary:hover{background:var(--gold-bright);border-color:var(--gold-bright);transform:translateY(-2px);box-shadow:0 12px 34px rgba(201,168,106,.24)}
+  .btn-primary .spark{transition:transform .45s}
+  .btn-primary:hover .spark{transform:rotate(-12deg) scale(1.08)}
+  .context-dot{
+    width:5px;height:5px;border-radius:50%;background:var(--gold);
+    box-shadow:0 0 0 3px var(--gold-soft);
+  }
+  .context-strip{
+    display:inline-flex;align-items:center;gap:8px;max-width:min(620px,100%);
+    margin-top:18px;padding:7px 12px;border:1px solid var(--hair);border-radius:999px;
+    background:var(--glass);color:var(--muted);font:inherit;font-size:10.5px;
+    letter-spacing:.04em;cursor:pointer;transition:border-color .2s,background .2s,color .2s;
+  }
+  .context-strip[hidden]{display:none}
+  .context-strip:hover{border-color:var(--gold-line);background:var(--glass-strong);color:var(--ink-soft)}
+  .context-strip-key{color:var(--gold);letter-spacing:.1em;flex:none}
+  .context-strip-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .context-strip .icon{width:12px;height:12px;flex:none;opacity:.65}
+  .btn kbd{
+    font-family:var(--sans);font-size:9px;line-height:1;padding:3px 5px;
+    border:1px solid var(--hair-strong);border-radius:4px;color:var(--muted);opacity:.7;
+  }
+  .btn-primary kbd{border-color:rgba(23,19,11,.3);color:rgba(23,19,11,.6)}
+  .is-spinning .icon{animation:spin .8s linear infinite}
+
+  /* ---------- AI panel ---------- */
+  .ai-panel{
+    width:min(880px,100%);margin-top:40px;overflow:hidden;
+    border:1px solid var(--hair);border-radius:22px;
+    background:var(--panel);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
+    box-shadow:var(--shadow);animation:panelIn .42s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .ai-panel[hidden]{display:none}
+  .ai-head{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:17px 22px;border-bottom:1px solid var(--hair);
+  }
+  .ai-title-wrap{display:flex;align-items:center;gap:12px;min-width:0}
+  .ai-glyph{
+    width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:none;
+    color:var(--gold);border:1px solid var(--gold-line);background:var(--gold-soft);
+  }
+  .ai-glyph .icon{width:15px;height:15px}
+  .ai-title{display:flex;align-items:center;flex-wrap:wrap;gap:7px;font-size:13px;letter-spacing:.1em;color:var(--ink);font-weight:600}
+  .ai-context-badge{
+    display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:999px;
+    font-size:8.5px;font-weight:400;letter-spacing:.06em;color:var(--gold);
+    background:var(--gold-soft);border:1px solid var(--gold-line);
+  }
+  .ai-context-badge .icon{width:10px;height:10px}
+  .ai-context-badge[hidden]{display:none}
+  .ai-sub{margin-top:4px;font-size:10px;letter-spacing:.07em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ai-live{
+    display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:999px;
+    font-size:8.5px;font-weight:400;letter-spacing:.1em;color:var(--gold);
+    background:var(--gold-soft);border:1px solid var(--gold-line);
+  }
+  .ai-live i{width:3px;height:3px;border-radius:50%;background:var(--gold);animation:pulse 1.1s ease-in-out infinite}
+  .ai-live[hidden]{display:none}
+  .ai-tools{display:flex;align-items:center;gap:5px;flex:none}
+  .mini{
+    display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 9px;
+    border:1px solid transparent;border-radius:8px;background:none;color:var(--muted);
+    font-size:10.5px;letter-spacing:.05em;cursor:pointer;transition:.2s;
+  }
+  .mini .icon{width:14px;height:14px}
+  .mini:hover{color:var(--ink);background:var(--glass-strong);border-color:var(--hair)}
+  .mini:disabled{opacity:.35;cursor:default;background:none;border-color:transparent}
+  .mini.icon-only{width:30px;padding:0;justify-content:center}
+  .mini.active{color:var(--gold);border-color:var(--gold-line);background:var(--gold-soft);opacity:1}
+  .ai-body{padding:26px 30px 30px;min-height:138px}
+  .ai-body [hidden]{display:none!important}
+  .reasoning{
+    margin:0 0 20px;overflow:hidden;border:1px solid var(--hair);border-radius:11px;
+    background:var(--glass);
+  }
+  .reasoning summary{
+    list-style:none;display:flex;align-items:center;gap:8px;
+    padding:10px 12px;font-size:10.5px;letter-spacing:.06em;color:var(--muted);
+    cursor:pointer;user-select:none;transition:color .2s;
+  }
+  .reasoning summary::-webkit-details-marker{display:none}
+  .reasoning summary:hover{color:var(--ink-soft)}
+  .reasoning summary::after{content:"+";margin-left:2px;font-size:13px;line-height:1;color:var(--muted)}
+  .reasoning[open] summary::after{content:"−"}
+  .reasoning-status{
+    width:5px;height:5px;flex:none;border-radius:50%;background:var(--gold);
+    box-shadow:0 0 0 3px rgba(201,168,106,.1);
+  }
+  .reasoning.is-thinking .reasoning-status{animation:pulse 1.15s ease-in-out infinite}
+  .reasoning-count{margin-left:auto;font-size:9px;letter-spacing:.03em;opacity:.65;font-variant-numeric:tabular-nums}
+  .reasoning-body{
+    max-height:240px;overflow:auto;padding:10px 12px 12px;border-top:1px solid var(--hair);
+    font-size:11.5px;line-height:1.8;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;
+  }
+  .ai-foot{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding:11px 24px;border-top:1px solid var(--hair);
+    font-size:9.5px;letter-spacing:.08em;color:var(--muted);opacity:.8;
+  }
+  .ai-foot-stats{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+
+  /* ---------- 继续对话 ---------- */
+  .chat-thread{
+    display:flex;flex-direction:column;gap:16px;margin-top:24px;padding-top:22px;
+    border-top:1px solid var(--hair);
+  }
+  .chat-thread[hidden]{display:none}
+  .chat-msg{max-width:90%;line-height:1.85}
+  .chat-msg.user{
+    align-self:flex-end;padding:10px 13px;border:1px solid var(--gold-line);
+    border-radius:14px 14px 4px 14px;background:var(--gold-soft);
+    color:var(--ink-soft);font-size:13.5px;white-space:pre-wrap;overflow-wrap:anywhere;
+  }
+  .chat-msg.assistant{align-self:flex-start;width:100%;max-width:100%}
+  .chat-msg.assistant .chat-markdown{font-size:14.5px;line-height:1.9}
+  .chat-role{
+    display:flex;align-items:center;gap:5px;margin-bottom:6px;color:var(--muted);
+    font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;
+  }
+  .chat-role .icon{width:10px;height:10px;color:var(--gold)}
+  .chat-msg .reasoning{margin-bottom:10px}
+  .chat-msg .reasoning summary{font-size:9.5px}
+  .chat-msg .reasoning-body{font-size:10.5px}
+  .chat-msg.is-streaming{opacity:.98}
+  .chat-composer{
+    display:flex;align-items:flex-end;gap:9px;margin-top:22px;padding-top:17px;
+    border-top:1px solid var(--hair);
+  }
+  .chat-composer[hidden]{display:none}
+  .chat-input{
+    flex:1;width:100%;min-height:40px;max-height:112px;resize:none;
+    padding:10px 13px;border:1px solid var(--hair);border-radius:12px;
+    background:var(--input-bg);color:var(--ink);font:inherit;font-size:12.5px;
+    line-height:1.6;outline:none;transition:border-color .2s,box-shadow .2s;
+  }
+  .chat-input::placeholder{color:var(--muted);opacity:.55}
+  .chat-input:focus{border-color:var(--gold-line);box-shadow:0 0 0 3px var(--gold-soft)}
+  .chat-input:disabled{opacity:.55}
+  .chat-send{
+    width:40px;height:40px;flex:none;display:grid;place-items:center;
+    border:1px solid var(--gold);border-radius:50%;background:var(--gold);
+    color:var(--gold-ink);cursor:pointer;transition:.2s;
+  }
+  .chat-send .icon{width:16px;height:16px;stroke-width:2}
+  .chat-send:hover:not(:disabled){background:var(--gold-bright);border-color:var(--gold-bright);transform:translateY(-1px)}
+  .chat-send:disabled{opacity:.4;cursor:default;transform:none}
+  .chat-typing{
+    display:flex;align-items:center;gap:8px;color:var(--muted);
+    font-size:10.5px;letter-spacing:.08em;padding:2px 0;
+  }
+  .chat-typing[hidden]{display:none}
+  #aiUsageTag{color:var(--gold);white-space:nowrap}
+  #aiUsageTag:not([hidden])::before{content:"·";margin-right:8px;color:var(--muted);opacity:.6}
+
+  .thinking{display:flex;align-items:center;gap:9px;margin-bottom:22px;font-size:11.5px;letter-spacing:.1em;color:var(--muted)}
+  .thinking-dots{display:inline-flex;gap:3px}
+  .thinking-dots i{width:4px;height:4px;border-radius:50%;background:var(--gold);animation:bounce 1.2s ease-in-out infinite}
+  .thinking-dots i:nth-child(2){animation-delay:.15s}
+  .thinking-dots i:nth-child(3){animation-delay:.3s}
+  .skel-line{
+    height:10px;border-radius:999px;margin-bottom:13px;width:var(--w,100%);
+    background:linear-gradient(90deg,var(--hair) 0%,var(--hair-strong) 50%,var(--hair) 100%);
+    background-size:220% 100%;animation:shimmer 1.9s ease-in-out infinite;
+  }
+  .skel-line:nth-child(4){width:74%;margin-bottom:24px}
+  .skel-line:nth-child(5){width:92%}
+  .skel-line:nth-child(6){width:83%}
+  .skel-line:nth-child(7){width:46%;margin-bottom:0}
+
+  .ai-error{display:flex;gap:14px;align-items:flex-start;padding:4px 0}
+  .error-mark{
+    width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;
+    color:#d9a08c;border:1px solid rgba(217,160,140,.3);background:rgba(217,160,140,.08);
+    font-family:var(--serif);font-size:15px;
+  }
+  .ai-error h4{margin:3px 0 6px;font-size:13px;letter-spacing:.05em;color:var(--ink);font-weight:600}
+  .ai-error p{margin:0;font-size:12px;line-height:1.8;color:var(--muted);max-width:560px}
+  .error-actions{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
+  .error-actions button{
+    height:30px;padding:0 11px;border-radius:7px;border:1px solid var(--hair);
+    background:var(--glass);color:var(--ink-soft);font-size:10.5px;cursor:pointer;transition:.2s;
+  }
+  .error-actions button:hover{border-color:var(--hair-strong);color:var(--ink)}
+  .error-actions button.accent{color:var(--gold);border-color:var(--gold-line);background:var(--gold-soft)}
+
+  /* ---------- markdown ---------- */
+  .markdown{font-size:15px;line-height:1.95;color:var(--ink-soft);overflow-wrap:anywhere}
+  .markdown > :first-child{margin-top:0!important}
+  .markdown > :last-child{margin-bottom:0!important}
+  .markdown p{margin:0 0 1.05em}
+  .markdown h2,.markdown h3,.markdown h4{
+    color:var(--ink);font-family:var(--serif);font-weight:600;line-height:1.55;
+    letter-spacing:.045em;margin:1.7em 0 .75em;
+  }
+  .markdown h2{font-size:20px}
+  .markdown h3{font-size:17px}
+  .markdown h4{font-size:14.5px}
+  .markdown strong{color:var(--ink);font-weight:600}
+  .markdown em{color:var(--gold);font-style:italic}
+  .markdown del{opacity:.6}
+  .markdown blockquote{
+    margin:1.3em 0;padding:.55em 0 .55em 1.1em;
+    border-left:2px solid var(--gold-line);
+    background:linear-gradient(90deg,var(--gold-soft),transparent 80%);
+    color:var(--ink-soft);font-family:var(--serif);font-size:15.5px;
+  }
+  .markdown blockquote p:last-child{margin-bottom:0}
+  .markdown ul,.markdown ol{margin:.7em 0 1.15em;padding-left:1.35em}
+  .markdown li{margin:.35em 0;padding-left:.15em}
+  .markdown li::marker{color:var(--gold)}
+  .markdown code{
+    font-family:var(--mono);font-size:.84em;color:var(--gold);
+    background:var(--code-bg);border:1px solid var(--hair);
+    padding:.12em .38em;border-radius:5px;
+  }
+  .markdown pre{
+    margin:1.25em 0;padding:16px 18px;overflow:auto;
+    border:1px solid var(--hair);border-radius:12px;background:var(--pre-bg);
+    -webkit-overflow-scrolling:touch;
+  }
+  .markdown pre code{
+    display:block;background:none;border:0;padding:0;color:var(--ink-soft);
+    font-size:12.5px;line-height:1.75;white-space:pre;
+  }
+  .markdown a{color:var(--gold);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+  .markdown a:hover{color:var(--gold-bright)}
+  .markdown hr{border:0;height:1px;background:var(--hair);margin:2em 0}
+  .markdown table{width:100%;border-collapse:collapse;margin:1.3em 0;font-size:13px;display:block;overflow-x:auto}
+  .markdown th,.markdown td{padding:8px 12px;border-bottom:1px solid var(--hair);text-align:left;white-space:nowrap}
+  .markdown th{color:var(--ink);font-weight:600;background:var(--glass)}
+  .markdown.is-streaming > :last-child::after{
+    content:"";display:inline-block;width:2px;height:1.05em;margin-left:4px;
+    vertical-align:-.12em;background:var(--gold);animation:blink 1s steps(2,start) infinite;
+  }
+
+  /* ---------- footer ---------- */
+  .footer{
+    width:min(1180px,100%);margin:0 auto;padding:0 clamp(22px,4vw,44px) 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;
+    font-size:9.5px;letter-spacing:.13em;color:var(--muted);opacity:.72;
+  }
+  .footer-left,.footer-right{display:flex;align-items:center;gap:8px}
+  .footer-link{color:inherit;text-decoration:none;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+  .footer-link:hover{color:var(--ink-soft);border-color:var(--hair-strong)}
+  .status-dot{width:4px;height:4px;border-radius:50%;background:var(--jade);box-shadow:0 0 0 3px rgba(138,168,153,.1);animation:pulse 2.6s ease-in-out infinite}
+
+  /* ---------- modal ---------- */
+  .overlay{
+    position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:22px;
+    background:rgba(5,7,6,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    animation:fadeIn .2s ease both;
+  }
+  .overlay[hidden]{display:none}
+  .modal{
+    width:min(646px,100%);max-height:min(94svh,860px);display:flex;flex-direction:column;
+    background:var(--modal-bg);border:1px solid var(--hair-strong);border-radius:24px;
+    box-shadow:var(--shadow);overflow:hidden;animation:modalIn .34s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .modal-head{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+    padding:22px 28px 18px;border-bottom:1px solid var(--hair);flex:none;
+  }
+  .modal-head h2{margin:0;font-family:var(--serif);font-size:20px;font-weight:600;letter-spacing:.12em;color:var(--ink)}
+  .modal-head p{margin:6px 0 0;font-size:10.5px;line-height:1.6;letter-spacing:.09em;color:var(--muted)}
+  .modal-body{padding:2px 28px 18px;overflow-y:auto;overscroll-behavior:contain}
+  .modal-body::-webkit-scrollbar{width:5px}
+  .modal-body::-webkit-scrollbar-thumb{background:var(--hair-strong);border-radius:3px}
+  .settings-section{padding:18px 0 17px;border-bottom:1px solid var(--hair)}
+  .settings-section:last-of-type{border-bottom:0}
+  .section-title{display:flex;align-items:center;gap:9px;margin-bottom:6px;font-size:12.5px;font-weight:600;letter-spacing:.11em;color:var(--ink)}
+  .section-title span{font-family:var(--mono);font-size:9px;font-weight:400;color:var(--gold);letter-spacing:.06em}
+  .section-desc{margin:0 0 13px;font-size:10.5px;line-height:1.7;color:var(--muted);letter-spacing:.02em}
+  .provider-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+  .chip{
+    padding:7px 13px;border:1px solid var(--hair);border-radius:999px;background:transparent;
+    color:var(--muted);font-size:11px;letter-spacing:.04em;cursor:pointer;transition:.2s;
+  }
+  .chip:hover{color:var(--ink);border-color:var(--hair-strong)}
+  .chip.active{color:var(--gold);border-color:var(--gold-line);background:var(--gold-soft)}
+  .field{display:block;margin-bottom:13px}
+  .field:last-child{margin-bottom:0}
+  .field-label{display:block;margin-bottom:7px;font-size:10px;letter-spacing:.1em;color:var(--muted)}
+  .input{
+    width:100%;height:43px;padding:0 13px;border-radius:10px;
+    border:1px solid var(--hair);background:var(--input-bg);color:var(--ink);
+    font-size:12.5px;letter-spacing:.01em;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;
+  }
+  .input::placeholder{color:var(--muted);opacity:.55}
+  .input:focus{border-color:var(--gold-line);box-shadow:0 0 0 3px var(--gold-soft);background:var(--glass-strong)}
+  .input.invalid{border-color:#c98c78;box-shadow:0 0 0 3px rgba(201,140,120,.1)}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .input-wrap{position:relative;display:block}
+  .input-wrap .input{padding-right:42px}
+  .reveal{
+    position:absolute;right:5px;top:50%;transform:translateY(-50%);
+    width:33px;height:33px;display:grid;place-items:center;border:0;border-radius:7px;
+    background:none;color:var(--muted);cursor:pointer;
+  }
+  .reveal:hover{color:var(--ink);background:var(--glass)}
+  .reveal .icon{width:15px;height:15px}
+  .deep-model{
+    margin:2px 0 12px;padding:11px 12px 12px;
+    border:1px solid var(--hair);border-radius:12px;background:var(--glass);
+  }
+  .deep-model[hidden]{display:none}
+  .deep-model-head{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    font-size:10px;letter-spacing:.08em;color:var(--muted);
+  }
+  .deep-model-tip{font-size:9px;letter-spacing:.04em;opacity:.75;white-space:nowrap}
+  .deep-model-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+  .deep-model-card{
+    padding:10px 11px;text-align:left;border:1px solid var(--hair);border-radius:9px;
+    background:transparent;color:var(--ink-soft);cursor:pointer;transition:.2s;
+  }
+  .deep-model-card strong{display:block;font-size:12.5px;font-weight:600;letter-spacing:.04em}
+  .deep-model-card span{display:block;margin-top:4px;font-size:9px;line-height:1.5;color:var(--muted);letter-spacing:.02em}
+  .deep-model-card:hover{border-color:var(--hair-strong)}
+  .deep-model-card.active{border-color:var(--gold-line);background:var(--gold-soft)}
+  .deep-model-card.active strong{color:var(--gold)}
+  .think-box{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+    margin:2px 0 12px;padding:11px 13px;border:1px solid var(--hair);border-radius:11px;
+    background:var(--glass);transition:border-color .22s,background .22s;
+  }
+  .think-box[hidden]{display:none}
+  .think-box.active{border-color:var(--gold-line);background:var(--gold-soft)}
+  .think-copy{min-width:0}
+  .think-title{display:flex;align-items:center;gap:6px;font-size:11.5px;letter-spacing:.05em;color:var(--ink-soft)}
+  .think-title em{
+    font-style:normal;font-size:8px;line-height:1;letter-spacing:.08em;color:var(--gold);
+    padding:3px 5px;border:1px solid var(--gold-line);border-radius:4px;
+  }
+  .think-desc{display:block;margin-top:4px;font-size:9.5px;line-height:1.5;color:var(--muted);letter-spacing:.02em}
+  .switch{
+    position:relative;flex:none;width:38px;height:21px;padding:0;
+    border:1px solid var(--hair-strong);border-radius:999px;background:transparent;
+    cursor:pointer;transition:background .22s,border-color .22s;
+  }
+  .switch::after{
+    content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;
+    border-radius:50%;background:var(--muted);transition:transform .22s,background .22s;
+  }
+  .switch[aria-checked="true"]{background:var(--gold);border-color:var(--gold)}
+  .switch[aria-checked="true"]::after{transform:translateX(17px);background:var(--gold-ink)}
+  .test-row{display:flex;align-items:center;gap:11px;margin-top:2px;min-height:27px}
+  .test-btn{
+    height:28px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--hair);border-radius:7px;background:transparent;color:var(--ink-soft);
+    font-size:10px;letter-spacing:.05em;cursor:pointer;transition:.2s;
+  }
+  .test-btn:hover{border-color:var(--hair-strong);color:var(--ink)}
+  .test-btn:disabled{opacity:.5;cursor:default}
+  .test-status{font-size:10px;line-height:1.5;color:var(--muted)}
+  .test-status.ok{color:var(--jade)}
+  .test-status.err{color:#c98c78}
+  .secure-note{display:flex;align-items:flex-start;gap:6px;margin:13px 0 0;font-size:9.5px;line-height:1.65;color:var(--muted);letter-spacing:.02em;opacity:.85}
+  .secure-note .icon{width:11px;height:11px;margin-top:2px}
+
+  .length-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  .length-card{
+    padding:13px 12px 12px;border:1px solid var(--hair);border-radius:11px;
+    background:transparent;text-align:left;cursor:pointer;transition:.22s;color:var(--ink-soft);
+  }
+  .length-card strong{display:block;font-size:12.5px;font-weight:600;letter-spacing:.06em}
+  .length-card span{display:block;margin:4px 0 8px;font-size:9.5px;color:var(--muted);letter-spacing:.03em}
+  .length-card em{display:block;font-style:normal;font-size:9px;color:var(--muted);opacity:.7;letter-spacing:.04em}
+  .length-card:hover{border-color:var(--hair-strong)}
+  .length-card.active{border-color:var(--gold-line);background:var(--gold-soft)}
+  .length-card.active strong{color:var(--gold)}
+
+  .usage-modal{width:min(620px,100%)}
+  .usage-summary{display:grid;grid-template-columns:1.15fr 1fr .85fr;gap:9px;padding:20px 0 3px}
+  .usage-card{
+    padding:13px 13px 12px;border:1px solid var(--hair);border-radius:11px;background:var(--glass);
+    min-width:0;
+  }
+  .usage-card span{display:block;font-size:9px;letter-spacing:.08em;color:var(--muted)}
+  .usage-card strong{
+    display:block;margin-top:7px;font-family:var(--serif);font-size:19px;font-weight:600;
+    letter-spacing:.01em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    font-variant-numeric:tabular-nums;
+  }
+  .usage-card em{display:block;margin-top:5px;font-style:normal;font-size:8.5px;line-height:1.5;color:var(--muted);letter-spacing:.02em}
+  .usage-card.accent{border-color:var(--gold-line);background:var(--gold-soft)}
+  .usage-card.accent strong{color:var(--gold)}
+  .usage-last{
+    padding:12px 13px;border:1px solid var(--hair);border-radius:10px;background:var(--glass);
+    font-size:10.5px;line-height:1.7;color:var(--muted);
+  }
+  .usage-empty{color:var(--muted);opacity:.8}
+  .usage-last strong{color:var(--ink-soft);font-weight:500}
+  .usage-last .usage-last-cost{color:var(--gold)}
+  .usage-price{font-size:10.5px;line-height:1.8;color:var(--muted)}
+  .usage-price b{color:var(--ink-soft);font-weight:500}
+  .usage-price .usage-price-head{color:var(--ink-soft);font-size:11px;letter-spacing:.02em}
+  .usage-price .usage-price-rates{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:5px}
+  .usage-price .usage-price-rates span{white-space:nowrap}
+  .usage-custom{margin-top:4px}
+  .usage-custom[hidden]{display:none}
+  .usage-price-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .usage-price-grid .field{margin-bottom:9px}
+  .usage-note{margin:10px 0 0;font-size:9px;line-height:1.7;color:var(--muted);letter-spacing:.02em;opacity:.8}
+  .usage-history{max-height:250px;overflow-y:auto;overscroll-behavior:contain;padding-right:3px}
+  .usage-history::-webkit-scrollbar{width:4px}
+  .usage-history::-webkit-scrollbar-thumb{background:var(--hair-strong);border-radius:3px}
+  .usage-row{padding:11px 0;border-bottom:1px solid var(--hair)}
+  .usage-row:last-child{border-bottom:0}
+  .usage-row-head{display:flex;align-items:center;gap:8px;min-width:0}
+  .usage-row-model{font-size:10.5px;color:var(--ink-soft);letter-spacing:.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .usage-row-time{font-size:8.5px;color:var(--muted);white-space:nowrap}
+  .usage-row-cost{margin-left:auto;font-size:10.5px;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .usage-row-sub{margin-top:4px;font-size:9px;line-height:1.6;color:var(--muted);letter-spacing:.02em}
+  .usage-row-quote{
+    margin-top:4px;font-family:var(--serif);font-size:10px;line-height:1.6;color:var(--muted);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.8;
+  }
+  .history-modal{width:min(560px,100%)}
+  .history-list{display:flex;flex-direction:column;gap:8px;padding:4px 0 2px}
+  .history-item{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%;
+    padding:12px 13px;border:1px solid var(--hair);border-radius:11px;
+    background:var(--glass);color:inherit;text-align:left;cursor:pointer;transition:.2s;
+    font:inherit;
+  }
+  .history-item:hover{border-color:var(--hair-strong);background:var(--glass-strong)}
+  .history-item.active{border-color:var(--gold-line);background:var(--gold-soft)}
+  .history-item-main{min-width:0;flex:1}
+  .history-quote{
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    font-family:var(--serif);font-size:13px;line-height:1.65;color:var(--ink);
+  }
+  .history-meta{
+    margin-top:6px;font-size:8.5px;line-height:1.6;letter-spacing:.03em;color:var(--muted);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .history-side{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none}
+  .history-saved{
+    display:inline-flex;align-items:center;gap:3px;padding:3px 6px;border-radius:999px;
+    border:1px solid var(--gold-line);background:var(--gold-soft);color:var(--gold);
+    font-size:8px;letter-spacing:.04em;white-space:nowrap;
+  }
+  .history-saved .icon{width:9px;height:9px}
+  .history-current{font-size:8px;color:var(--muted);letter-spacing:.06em}
+  .history-empty{padding:30px 10px;text-align:center;font-size:11px;line-height:1.8;color:var(--muted)}
+  .mood-modal{width:min(560px,100%)}
+  .mood-grid{display:flex;flex-wrap:wrap;gap:8px}
+  .mood-chip{padding:8px 14px;font-size:11.5px;letter-spacing:.06em}
+  .mood-textarea{
+    height:122px;padding:12px 13px;line-height:1.75;resize:vertical;
+    min-height:96px;max-height:320px;
+  }
+  .mood-count-row{
+    display:flex;justify-content:flex-end;margin-top:5px;
+    font-size:9px;letter-spacing:.04em;color:var(--muted);opacity:.75;
+    font-variant-numeric:tabular-nums;
+  }
+  .advanced{border-bottom:1px solid var(--hair)}
+  .advanced summary{
+    list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:18px 0;font-size:11px;letter-spacing:.07em;color:var(--muted);cursor:pointer;transition:color .2s;
+  }
+  .advanced summary::-webkit-details-marker{display:none}
+  .advanced summary:hover{color:var(--ink)}
+  .advanced summary::after{content:"+";font-size:14px;color:var(--muted);line-height:1}
+  .advanced[open] summary::after{content:"−"}
+  .advanced[open] summary{color:var(--ink-soft)}
+  .advanced-inner{padding:0 0 20px}
+  .advanced-note{margin:9px 0 0;font-size:9.5px;line-height:1.75;color:var(--muted);letter-spacing:.02em}
+
+  .modal-foot{
+    flex:none;display:flex;align-items:center;justify-content:space-between;gap:16px;
+    padding:13px 28px;border-top:1px solid var(--hair);background:var(--modal-foot);
+  }
+  .modal-foot-right{display:flex;align-items:center;gap:8px}
+  .modal-foot .btn{height:40px;padding:0 18px;font-size:12px}
+  .text-btn{background:none;border:0;padding:5px 0;color:var(--muted);font-size:10.5px;letter-spacing:.05em;cursor:pointer;transition:color .2s}
+  .text-btn:hover{color:var(--ink)}
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:30px;z-index:120;
+    display:flex;align-items:center;gap:8px;padding:11px 17px;
+    border-radius:999px;background:var(--toast-bg);color:var(--toast-ink);
+    font-size:11.5px;letter-spacing:.04em;box-shadow:0 14px 40px rgba(0,0,0,.26);
+    opacity:0;transform:translate(-50%,14px);pointer-events:none;
+    transition:opacity .28s,transform .28s;
+  }
+  .toast .icon{width:14px;height:14px}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes panelIn{from{opacity:0;transform:translateY(14px) scale(.995)}to{opacity:1;transform:none}}
+  @keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes drift{0%{transform:translate3d(-1.5%,-1%,0) scale(1)}100%{transform:translate3d(1.5%,1.5%,0) scale(1.04)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes pulse{0%,100%{opacity:.35;transform:scale(.92)}50%{opacity:1;transform:scale(1)}}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-3px);opacity:1}}
+  @keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+  @keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+  @media (max-width:760px){
+    .brand-sub{display:none}
+    .topbar{padding-top:20px}
+    .main{padding-top:30px;padding-bottom:34px;justify-content:flex-start}
+    .stage{margin-top:clamp(34px,8vh,64px)}
+    .quote-mark{font-size:122px;top:-40px}
+    .quote p{font-size:clamp(25px,7.4vw,33px);line-height:1.75}
+    .quote p.is-long{font-size:clamp(21px,6.1vw,27px)}
+    .quote p.is-xlong{font-size:clamp(18px,5.2vw,23px)}
+    .quote-meta{font-size:11px;gap:6px;margin-top:22px}
+    .actions{margin-top:32px;gap:7px}
+    .actions .btn{height:42px;padding:0 11px;gap:6px;font-size:11.5px}
+    .btn kbd{display:none}
+    .context-strip{margin-top:16px;max-width:100%}
+    .ai-panel{border-radius:18px;margin-top:30px}
+    .ai-head{padding:14px 16px;gap:8px}
+    .ai-body{padding:20px 18px 22px}
+    .ai-tools .label{display:none}
+    .ai-tools .mini{padding:0 7px}
+    .ai-tools .mini.icon-only{width:29px}
+    .ai-foot{padding:10px 18px;font-size:9px}
+    .markdown{font-size:14.5px}
+    .overlay{padding:12px}
+    .modal{max-height:93svh;border-radius:19px}
+    .modal-head{padding:20px 20px 16px}
+    .modal-head h2{font-size:18px}
+    .modal-body{padding-left:20px;padding-right:20px}
+    .modal-foot{padding:13px 20px}
+    .field-grid{grid-template-columns:1fr;gap:0}
+    .length-grid{grid-template-columns:1fr;gap:7px}
+    .usage-modal{width:min(560px,100%)}
+    .usage-summary{grid-template-columns:1fr 1fr;gap:7px}
+    .usage-card:last-child{grid-column:1 / -1}
+    .usage-card strong{font-size:17px}
+    .usage-price-grid{grid-template-columns:1fr;gap:0}
+    .usage-history{max-height:220px}
+    .ai-foot{gap:5px;padding:10px 18px}
+    .quote-assist{gap:10px}
+    .chat-msg{max-width:96%}
+    .chat-msg.assistant{max-width:100%}
+    .chat-input{font-size:12px}
+    .history-modal{width:min(560px,100%)}
+    .length-card{display:grid;grid-template-columns:1fr auto;align-items:center;padding:11px 13px;gap:0 12px}
+    .length-card strong{grid-column:1}
+    .length-card span{grid-column:1;margin:3px 0 0}
+    .length-card em{grid-column:2;grid-row:1/3;align-self:center;font-size:8.5px;text-align:right}
+    .footer{padding-bottom:18px}
+    .footer-right{display:none}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms!important;animation-iteration-count:1!important;
+      transition-duration:.01ms!important;scroll-behavior:auto!important;
+    }
+  }
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.34 5.66"/><path d="M20 4v7h-7"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-mouse" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="6"/><path d="M12 6v4"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-feather" viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><path d="M16 8L2 22"/><path d="M17.5 15H9"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+</svg>
+
+<div class="backdrop" aria-hidden="true"></div>
+<div class="hairline-v" aria-hidden="true"></div>
+
+<div class="page">
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="拾言，返回首页">
+      <span class="brand-seal" aria-hidden="true">拾</span>
+      <span class="brand-text">
+        <span class="brand-name">拾言</span>
+        <span class="brand-sub">WORDS, HELD LIGHTLY</span>
+      </span>
+    </a>
+    <div class="top-actions">
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="切换明暗主题" title="切换明暗主题">
+        <svg class="icon icon-sun"><use href="#i-sun"></use></svg>
+        <svg class="icon icon-moon"><use href="#i-moon"></use></svg>
+      </button>
+      <button class="icon-btn" id="historyBtn" type="button" aria-label="查看历史记录" title="历史记录">
+        <svg class="icon"><use href="#i-clock"></use></svg>
+      </button>
+      <button class="icon-btn" id="usageBtn" type="button" aria-label="查看用量与费用" title="用量与费用">
+        <svg class="icon"><use href="#i-chart"></use></svg>
+        <span class="usage-dot" id="usageDot" hidden aria-hidden="true"></span>
+      </button>
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="打开设置" title="设置">
+        <svg class="icon"><use href="#i-settings"></use></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="stage" aria-label="今日一言">
+      <div class="kicker" aria-hidden="true">
+        <i></i><b id="category">一言</b><i></i>
+      </div>
+
+      <div class="quote-shell" id="quoteShell">
+        <span class="quote-mark" aria-hidden="true">“</span>
+        <blockquote class="quote" id="quoteBlock">
+          <p id="quoteText">正在拾取一句好话…</p>
+          <footer class="quote-meta">
+            <span class="dash" aria-hidden="true">——</span>
+            <span class="author" id="quoteAuthor"></span>
+            <cite id="quoteSource"></cite>
+          </footer>
+        </blockquote>
+        <div class="quote-assist">
+          <p class="dbl-hint">
+            <svg class="icon" aria-hidden="true"><use href="#i-mouse"></use></svg>
+            双击换一句 · 拖选可复制
+          </p>
+          <button class="back-link" id="backBtn" type="button" hidden>
+            <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg>
+            上一句
+          </button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-ghost" id="refreshBtn" type="button" title="换一句（快捷键 R）">
+          <svg class="icon"><use href="#i-refresh"></use></svg>
+          换一句
+          <kbd>R</kbd>
+        </button>
+        <button class="btn btn-ghost" id="copyBtn" type="button" title="复制句子与出处">
+          <svg class="icon"><use href="#i-copy"></use></svg>
+          复制
+        </button>
+        <button class="btn btn-ghost" id="moodBtn" type="button" title="设置心境与最近遇到的事" aria-expanded="false">
+          <svg class="icon"><use href="#i-feather"></use></svg>
+          心境
+          <span class="context-dot" id="contextDot" hidden aria-hidden="true"></span>
+        </button>
+        <button class="btn btn-primary" id="aiBtn" type="button" title="让 AI 解释这句话，并结合此刻">
+          <svg class="icon spark" aria-hidden="true"><use href="#i-sparkles"></use></svg>
+          AI 解读
+        </button>
+      </div>
+
+      <button class="context-strip" id="contextStrip" type="button" title="修改心境" hidden>
+        <span class="context-strip-key">此刻</span>
+        <span class="context-strip-text" id="contextStripText"></span>
+        <svg class="icon" aria-hidden="true"><use href="#i-feather"></use></svg>
+      </button>
+    </section>
+
+    <section class="ai-panel" id="aiPanel" aria-label="AI 解读" aria-live="polite" hidden>
+      <header class="ai-head">
+        <div class="ai-title-wrap">
+          <span class="ai-glyph" aria-hidden="true"><svg class="icon"><use href="#i-sparkles"></use></svg></span>
+          <div style="min-width:0">
+            <div class="ai-title">
+              AI 解读
+              <span class="ai-context-badge" id="aiContextBadge" hidden><svg class="icon" aria-hidden="true"><use href="#i-feather"></use></svg>结合此刻</span>
+              <span class="ai-live" id="aiLive" hidden><i></i><span id="aiLiveText">生成中</span></span>
+            </div>
+            <div class="ai-sub" id="aiSub">等待生成</div>
+          </div>
+        </div>
+        <div class="ai-tools">
+          <button class="mini" id="aiSaveBtn" type="button" title="保存对话到本机历史" disabled>
+            <svg class="icon"><use href="#i-bookmark"></use></svg><span class="label">保存</span>
+          </button>
+          <button class="mini" id="aiCopyBtn" type="button" title="复制解读">
+            <svg class="icon"><use href="#i-copy"></use></svg><span class="label">复制</span>
+          </button>
+          <button class="mini" id="aiRetryBtn" type="button" title="重新解读">
+            <svg class="icon"><use href="#i-refresh"></use></svg><span class="label">重来</span>
+          </button>
+          <button class="mini icon-only" id="aiCloseBtn" type="button" aria-label="关闭解读" title="关闭">
+            <svg class="icon"><use href="#i-close"></use></svg>
+          </button>
+        </div>
+      </header>
+      <div class="ai-body">
+        <details class="reasoning" id="reasoningBox" hidden>
+          <summary>
+            <i class="reasoning-status" aria-hidden="true"></i>
+            <span id="reasoningLabel">深度思考中…</span>
+            <span class="reasoning-count" id="reasoningCount"></span>
+          </summary>
+          <div class="reasoning-body" id="reasoningText" aria-live="off"></div>
+        </details>
+        <div class="ai-loading" id="aiLoading">
+          <div class="thinking">
+            <span class="thinking-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span id="thinkingText">正在读这一句…</span>
+          </div>
+          <div class="skel-line" style="--w:94%"></div>
+          <div class="skel-line" style="--w:88%"></div>
+          <div class="skel-line" style="--w:96%"></div>
+          <div class="skel-line" style="--w:74%"></div>
+          <div class="skel-line" style="--w:92%"></div>
+          <div class="skel-line" style="--w:83%"></div>
+          <div class="skel-line" style="--w:46%"></div>
+        </div>
+        <div class="ai-error" id="aiError" hidden>
+          <div class="error-mark" aria-hidden="true">!</div>
+          <div>
+            <h4 id="aiErrorTitle">解读失败</h4>
+            <p id="aiErrorText"></p>
+            <div class="error-actions">
+              <button type="button" id="aiErrorRetry">重试</button>
+              <button type="button" id="aiErrorSettings" class="accent">检查设置</button>
+            </div>
+          </div>
+        </div>
+        <article class="markdown" id="aiContent" hidden></article>
+        <div class="chat-thread" id="chatThread" hidden></div>
+        <form class="chat-composer" id="chatForm" hidden>
+          <textarea class="chat-input" id="chatInput" rows="1" maxlength="2000"
+                    placeholder="继续和 AI 聊聊…（Enter 发送，Shift+Enter 换行）"></textarea>
+          <button class="chat-send" id="chatSend" type="submit" aria-label="发送消息" title="发送">
+            <svg class="icon"><use href="#i-send"></use></svg>
+          </button>
+        </form>
+      </div>
+      <footer class="ai-foot">
+        <span>内容由 AI 生成，仅供参考；不构成心理建议</span>
+        <span class="ai-foot-stats">
+          <span id="aiLengthTag">适中 · 约 280 字</span>
+          <span id="aiUsageTag" hidden></span>
+        </span>
+      </footer>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="footer-left"><i class="status-dot" aria-hidden="true"></i><span><a class="footer-link" href="https://hitokoto.cn/" target="_blank" rel="noopener noreferrer">一言</a>公共接口 · 无需 API Key</span></span>
+    <span class="footer-right">拖选复制 · R 刷新 · Esc 关闭</span>
+  </footer>
+</div>
+
+<div class="overlay" id="settingsOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <header class="modal-head">
+      <div>
+        <h2 id="settingsTitle">设置</h2>
+        <p>接入你自己的模型 · 调整解读的呼吸感</p>
+      </div>
+      <button class="icon-btn" id="settingsClose" type="button" aria-label="关闭设置">
+        <svg class="icon"><use href="#i-close"></use></svg>
+      </button>
+    </header>
+
+    <div class="modal-body" id="settingsBody">
+      <section class="settings-section">
+        <div class="section-title"><span>01</span>AI 接口</div>
+        <p class="section-desc">兼容 OpenAI Chat Completions 协议。填入地址、模型与 Key 即可，支持流式输出。</p>
+
+        <div class="provider-row" id="providerRow" role="group" aria-label="接口预设">
+          <button class="chip" type="button" data-provider="deepseek">DeepSeek</button>
+          <button class="chip" type="button" data-provider="openai">OpenAI</button>
+          <button class="chip" type="button" data-provider="custom">自定义</button>
+        </div>
+
+        <label class="field">
+          <span class="field-label">API 地址</span>
+          <input class="input" id="endpointInput" type="url" inputmode="url" spellcheck="false" autocomplete="off"
+                 placeholder="https://api.deepseek.com/chat/completions">
+        </label>
+
+        <div class="field-grid">
+          <label class="field">
+            <span class="field-label">模型</span>
+            <input class="input" id="modelInput" type="text" spellcheck="false" autocomplete="off" placeholder="deepseek-flash">
+          </label>
+          <label class="field">
+            <span class="field-label">API Key</span>
+            <span class="input-wrap">
+              <input class="input" id="keyInput" type="password" spellcheck="false" autocomplete="off" placeholder="sk-...">
+              <button class="reveal" id="revealKey" type="button" aria-label="显示 API Key">
+                <svg class="icon"><use href="#i-eye"></use></svg>
+              </button>
+            </span>
+          </label>
+        </div>
+
+        <div class="deep-model" id="deepModelRow" hidden>
+          <div class="deep-model-head">
+            <span>DeepSeek 模型</span>
+            <span class="deep-model-tip">日常 Flash · 复杂 Pro</span>
+          </div>
+          <div class="deep-model-grid" role="group" aria-label="DeepSeek 模型选择">
+            <button class="deep-model-card" type="button" data-deep-model="deepseek-flash" aria-pressed="false"
+                    title="Flash：更快、更省，适合日常解读">
+              <strong>Flash</strong>
+              <span>快、轻、省 · 日常解读</span>
+            </button>
+            <button class="deep-model-card" type="button" data-deep-model="deepseek-v4-pro" aria-pressed="false"
+                    title="Pro：更深、更稳，速度更慢、费用更高，适合复杂心境与长背景">
+              <strong>Pro</strong>
+              <span>更深、更稳 · 复杂心境</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="think-box" id="thinkBox" hidden>
+          <div class="think-copy">
+            <div class="think-title" id="thinkLabel">深度思考 <em>DEEPSEEK</em></div>
+            <span class="think-desc">先推理，再落笔。更慢，也更深入。</span>
+          </div>
+          <button class="switch" id="thinkToggle" type="button" role="switch"
+                  aria-checked="false" aria-labelledby="thinkLabel"></button>
+        </div>
+
+        <div class="test-row">
+          <button class="test-btn" id="testBtn" type="button">测试连接</button>
+          <span class="test-status" id="testStatus" role="status"></span>
+        </div>
+
+        <p class="secure-note">
+          <svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+          Key 只保存在本机浏览器 localStorage，下次打开无需重复填写，不会经过本站服务器。请勿在公共设备上保存。
+        </p>
+      </section>
+
+      <section class="settings-section">
+        <div class="section-title"><span>02</span>解读长度</div>
+        <p class="section-desc">越短越克制，越长越有层次；不限则写到完整为止。</p>
+        <div class="length-grid" id="lengthGrid" role="group" aria-label="解读长度">
+          <button class="length-card" type="button" data-length="short">
+            <strong>简短</strong><span>约 120 字</span><em>点到即止</em>
+          </button>
+          <button class="length-card" type="button" data-length="medium">
+            <strong>适中</strong><span>约 280 字</span><em>留有余味</em>
+          </button>
+          <button class="length-card" type="button" data-length="long">
+            <strong>详尽</strong><span>约 600 字</span><em>层层展开</em>
+          </button>
+          <button class="length-card" type="button" data-length="free">
+            <strong>不限</strong><span>不限字数</span><em>写到完整</em>
+          </button>
+        </div>
+      </section>
+
+      <details class="advanced">
+        <summary>高级 · 一言接口</summary>
+        <div class="advanced-inner">
+          <label class="field">
+            <span class="field-label">Hitokoto 接口地址</span>
+            <input class="input" id="hitokotoInput" type="url" inputmode="url" spellcheck="false" autocomplete="off"
+                   placeholder="https://v1.hitokoto.cn/">
+          </label>
+          <p class="advanced-note">默认为一言官方公共接口，免费且无需 API Key。留空即使用默认；若官方接口不可用，可填写自建或镜像地址。</p>
+        </div>
+      </details>
+    </div>
+
+    <footer class="modal-foot">
+      <button class="text-btn" id="resetBtn" type="button">恢复默认</button>
+      <div class="modal-foot-right">
+        <button class="btn btn-ghost" id="cancelBtn" type="button">取消</button>
+        <button class="btn btn-primary" id="saveBtn" type="button">保存设置</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<div class="overlay" id="moodOverlay" hidden>
+  <div class="modal mood-modal" role="dialog" aria-modal="true" aria-labelledby="moodTitle">
+    <header class="modal-head">
+      <div>
+        <h2 id="moodTitle">此刻的心境</h2>
+        <p>可选。让这句话暂时回到你的生活里。</p>
+      </div>
+      <button class="icon-btn" id="moodClose" type="button" aria-label="关闭心境设置">
+        <svg class="icon"><use href="#i-close"></use></svg>
+      </button>
+    </header>
+
+    <div class="modal-body" id="moodBody">
+      <section class="settings-section">
+        <div class="section-title"><span>01</span>选一个此刻</div>
+        <p class="section-desc">可以多选，不必准确；留空只解读句子。选了心境，AI 会少讲句子，多像朋友一样和你聊；若此刻不太好，它会先理解你。</p>
+        <div class="mood-grid" id="moodGrid" role="group" aria-label="心境预设">
+          <button class="chip mood-chip" type="button" data-mood="平静" aria-pressed="false">平静</button>
+          <button class="chip mood-chip" type="button" data-mood="焦虑" aria-pressed="false">焦虑</button>
+          <button class="chip mood-chip" type="button" data-mood="低落" aria-pressed="false">低落</button>
+          <button class="chip mood-chip" type="button" data-mood="迷茫" aria-pressed="false">迷茫</button>
+          <button class="chip mood-chip" type="button" data-mood="疲惫" aria-pressed="false">疲惫</button>
+          <button class="chip mood-chip" type="button" data-mood="孤独" aria-pressed="false">孤独</button>
+          <button class="chip mood-chip" type="button" data-mood="期待" aria-pressed="false">期待</button>
+          <button class="chip mood-chip" type="button" data-mood="释然" aria-pressed="false">释然</button>
+          <button class="chip mood-chip" type="button" data-mood="烦躁" aria-pressed="false">烦躁</button>
+          <button class="chip mood-chip" type="button" data-mood="温柔" aria-pressed="false">温柔</button>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <div class="section-title"><span>02</span>最近遇到的事</div>
+        <p class="section-desc">想写多少写多少；开心的、卡住的、说不清的，都可以。</p>
+        <label class="field">
+          <span class="sr-only">最近遇到的事</span>
+          <textarea class="input mood-textarea" id="eventInput"
+                    placeholder="例如：最近在考虑要不要换工作，迟迟下不了决心。"></textarea>
+        </label>
+        <div class="mood-count-row"><span id="eventCount">0</span> 字 · 不限字数</div>
+      </section>
+
+      <p class="secure-note">
+        <svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+        心境只保存在本机。点击「AI 解读」时，会发送给你配置的模型接口。
+      </p>
+    </div>
+
+    <footer class="modal-foot">
+      <button class="text-btn" id="moodClear" type="button">清空</button>
+      <div class="modal-foot-right">
+        <button class="btn btn-ghost" id="moodCancel" type="button">取消</button>
+        <button class="btn btn-primary" id="moodSave" type="button">保存心境</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<div class="overlay" id="usageOverlay" hidden>
+  <div class="modal usage-modal" role="dialog" aria-modal="true" aria-labelledby="usageTitle">
+    <header class="modal-head">
+      <div>
+        <h2 id="usageTitle">用量与费用</h2>
+        <p>优先按 API usage，缺失时估算 · 只保存在本机</p>
+      </div>
+      <button class="icon-btn" id="usageClose" type="button" aria-label="关闭用量面板">
+        <svg class="icon"><use href="#i-close"></use></svg>
+      </button>
+    </header>
+
+    <div class="modal-body" id="usageBody">
+      <div class="usage-summary">
+        <div class="usage-card">
+          <span>累计 tokens</span>
+          <strong id="usageTotalTokens">0</strong>
+          <em id="usageBreakdown">输入 0 / 输出 0</em>
+        </div>
+        <div class="usage-card accent">
+          <span>累计费用</span>
+          <strong id="usageTotalCost">¥0</strong>
+          <em id="usageCostNote">人民币估算</em>
+        </div>
+        <div class="usage-card">
+          <span>请求次数</span>
+          <strong id="usageRequests">0</strong>
+          <em>历史累计</em>
+        </div>
+      </div>
+
+      <section class="settings-section">
+        <div class="section-title"><span>01</span>本轮</div>
+        <div class="usage-last" id="usageLast">
+          <span class="usage-empty">还没有记录。点一次「AI 解读」，这里就会出现本轮用量。</span>
+        </div>
+      </section>
+
+      <section class="settings-section">
+        <div class="section-title"><span>02</span>计费单价</div>
+        <div class="usage-price" id="usagePriceAuto"></div>
+        <div class="usage-custom" id="usagePriceCustom" hidden>
+          <div class="usage-price-grid">
+            <label class="field">
+              <span class="field-label">输入单价（元 / 百万 tokens）</span>
+              <input class="input" id="customInputPrice" type="number" min="0" step="0.01" inputmode="decimal">
+            </label>
+            <label class="field">
+              <span class="field-label">输出单价（元 / 百万 tokens）</span>
+              <input class="input" id="customOutputPrice" type="number" min="0" step="0.01" inputmode="decimal">
+            </label>
+          </div>
+          <button class="test-btn" id="savePricing" type="button">保存单价</button>
+        </div>
+        <p class="usage-note" id="usageNote"></p>
+      </section>
+
+      <section class="settings-section">
+        <div class="section-title"><span>03</span>更早记录</div>
+        <div class="usage-history" id="usageHistory"></div>
+      </section>
+    </div>
+
+    <footer class="modal-foot">
+      <button class="text-btn" id="usageClear" type="button">清空记录</button>
+      <button class="btn btn-ghost" id="usageDone" type="button">关闭</button>
+    </footer>
+  </div>
+</div>
+
+<div class="overlay" id="historyOverlay" hidden>
+  <div class="modal history-modal" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
+    <header class="modal-head">
+      <div>
+        <h2 id="historyTitle">历史记录</h2>
+        <p>只保存在本机 · 可回到上一句，也可继续保存过的对话</p>
+      </div>
+      <button class="icon-btn" id="historyClose" type="button" aria-label="关闭历史记录">
+        <svg class="icon"><use href="#i-close"></use></svg>
+      </button>
+    </header>
+    <div class="modal-body" id="historyBody">
+      <div class="history-list" id="historyList"></div>
+    </div>
+    <footer class="modal-foot">
+      <button class="text-btn" id="historyClear" type="button">清空历史</button>
+      <button class="btn btn-ghost" id="historyDone" type="button">关闭</button>
+    </footer>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>
+  <span id="toastText"></span>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ============================== 配置 ============================== */
+  const STORAGE_SETTINGS = 'shiyan.settings.v1';
+  const STORAGE_THEME = 'shiyan.theme.v1';
+  const STORAGE_MOOD = 'shiyan.mood.v1';
+  const STORAGE_USAGE = 'shiyan.usage.v1';
+  const STORAGE_HISTORY = 'shiyan.history.v1';
+  const USAGE_HISTORY_MAX = 50;
+  const QUOTE_HISTORY_MAX = 60;
+  const LLM_MESSAGES_MAX = 30;
+
+  const PRESETS = {
+    deepseek: {
+      label: 'DeepSeek',
+      endpoint: 'https://api.deepseek.com/chat/completions',
+      model: 'deepseek-flash'
+    },
+    openai: {
+      label: 'OpenAI',
+      endpoint: 'https://api.openai.com/v1/chat/completions',
+      model: 'gpt-4o-mini'
+    },
+    custom: { label: '自定义' }
+  };
+
+  const DEFAULT_SETTINGS = {
+    provider: 'deepseek',
+    endpoint: PRESETS.deepseek.endpoint,
+    model: PRESETS.deepseek.model,
+    apiKey: '',
+    length: 'medium',
+    deepThink: false,
+    customInputPrice: 0,
+    customOutputPrice: 0,
+    hitokotoEndpoint: 'https://v1.hitokoto.cn/'
+  };
+
+  const LENGTHS = {
+    short:  { label: '简短', chars: 120, maxTokens: 420,  hint: '点到即止' },
+    medium: { label: '适中', chars: 280, maxTokens: 800,  hint: '留有余味' },
+    long:   { label: '详尽', chars: 600, maxTokens: 1600, hint: '层层展开' },
+    free:   { label: '不限', chars: null, maxTokens: null, hint: '写到完整' }
+  };
+
+  // DeepSeek 官方价格，单位：元 / 百万 tokens。来源：官方「模型 & 价格」页。
+  const DEEPSEEK_RATES = {
+    flash: {
+      label: 'Flash',
+      offPeak: { hit: 0.02, miss: 1, output: 4 },
+      peak:    { hit: 0.04, miss: 2, output: 8 }
+    },
+    pro: {
+      label: 'Pro',
+      offPeak: { hit: 0.15, miss: 4.5, output: 13.5 },
+      peak:    { hit: 0.30, miss: 9.0, output: 27.0 }
+    }
+  };
+
+  const HEAVY_MOODS = new Set(['低落', '焦虑', '迷茫', '疲惫', '孤独', '烦躁']);
+  const HEAVY_WORDS = [
+    '难过', '痛苦', '崩溃', '绝望', '失眠', '压力', '焦虑', '抑郁', '想哭', '难受',
+    '失败', '分手', '失业', '失去', '离开', '生病', '撑不住', '不想活', '自伤', '自杀',
+    '很累', '好累', '太累', '累死', '孤独', '迷茫', '烦躁', '低落',
+    '委屈', '无助', '内耗', '害怕', '恐惧', '自责', '愧疚', '想逃', '心里堵', '空虚', '麻木', '眼泪', '哭泣',
+    '不开心', '郁闷', '心烦', '心累', '糟糕', '情绪不好', '状态不好', '心情不好',
+    '不太好', '很丧', '好丧', '很烦', '好烦', '焦躁'
+  ];
+
+  const TYPES = {
+    a: '动画', b: '漫画', c: '游戏', d: '文学', e: '原创',
+    f: '网络', g: '其他', h: '影视', i: '诗词', j: '网易云', k: '哲学', l: '段子'
+  };
+
+  const FALLBACK_QUOTES = [
+    { text: '人生如逆旅，我亦是行人。', from: '临江仙·送钱穆父', who: '苏轼', type: 'i' },
+    { text: '醉后不知天在水，满船清梦压星河。', from: '题龙阳县青草湖', who: '唐珙', type: 'i' },
+    { text: '此心安处是吾乡。', from: '定风波·南海归赠王定国侍人寓娘', who: '苏轼', type: 'i' },
+    { text: '山中何事？松花酿酒，春水煎茶。', from: '人月圆·山中书事', who: '张可久', type: 'i' },
+    { text: '我见青山多妩媚，料青山见我应如是。', from: '贺新郎·甚矣吾衰矣', who: '辛弃疾', type: 'i' },
+    { text: '黑夜给了我黑色的眼睛，我却用它寻找光明。', from: '一代人', who: '顾城', type: 'd' },
+    { text: '凡是过往，皆为序章。', from: '暴风雨', who: '莎士比亚', type: 'd' },
+    { text: '满地的六便士，他却抬头看见了月亮。', from: '月亮与六便士', who: '毛姆', type: 'd' },
+    { text: '山有木兮木有枝，心悦君兮君不知。', from: '越人歌', who: '佚名', type: 'i' },
+    { text: '且将新火试新茶，诗酒趁年华。', from: '望江南·超然台作', who: '苏轼', type: 'i' },
+    { text: '岁月不居，时节如流。', from: '论盛孝章书', who: '孔融', type: 'd' },
+    { text: '人生天地间，忽如远行客。', from: '古诗十九首', who: '佚名', type: 'i' },
+    { text: '玻璃晴朗，橘子辉煌。', from: '过节', who: '北岛', type: 'd' },
+    { text: '我们读书，然后就不孤单。', from: '岛上书店', who: '加布瑞埃拉·泽文', type: 'd' }
+  ];
+
+  /* ============================== 工具 ============================== */
+  const $ = (id) => document.getElementById(id);
+  const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  function escapeHTML(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function safeText(value) {
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
+  function normalizeEndpoint(raw) {
+    let value = String(raw || '').trim();
+    if (!value) throw new Error('接口地址为空');
+    if (!/^https?:\/\//i.test(value)) value = 'https://' + value;
+    const url = new URL(value);
+    let path = url.pathname.replace(/\/+$/, '');
+    if (/\/chat\/completions$/i.test(path)) {
+      // already a complete endpoint
+    } else if (/\/v1$/i.test(path)) {
+      path += '/chat/completions';
+    } else if (path === '' || path === '/') {
+      path = '/v1/chat/completions';
+    } else {
+      path += '/chat/completions';
+    }
+    url.pathname = path;
+    url.hash = '';
+    return url.toString();
+  }
+
+  function isDeepSeekEndpoint(raw) {
+    try {
+      let value = String(raw || '').trim();
+      if (!value) return false;
+      if (!/^https?:\/\//i.test(value)) value = 'https://' + value;
+      const url = new URL(value);
+      return /(^|\.)deepseek\.com$/i.test(url.hostname);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function isDeepSeekModel(model) {
+    return /^deepseek/i.test(String(model || '').trim());
+  }
+
+  function deepThinkAvailable(endpoint, model) {
+    return isDeepSeekEndpoint(endpoint) || isDeepSeekModel(model);
+  }
+
+  function deepThinkEnabled(config = settings) {
+    return !!config.deepThink && deepThinkAvailable(config.endpoint, config.model);
+  }
+
+  function detectProvider(endpoint, model) {
+    const ep = String(endpoint || '').replace(/\/+$/, '');
+    for (const key of ['deepseek', 'openai']) {
+      if (ep === PRESETS[key].endpoint.replace(/\/+$/, '') ||
+          (key === 'deepseek' && /api\.deepseek\.com/i.test(ep)) ||
+          (key === 'openai' && /api\.openai\.com/i.test(ep))) {
+        return key;
+      }
+    }
+    if (!ep && model === PRESETS.deepseek.model) return 'deepseek';
+    return 'custom';
+  }
+
+  function loadSettings() {
+    try {
+      const raw = localStorage.getItem(STORAGE_SETTINGS);
+      if (!raw) return { ...DEFAULT_SETTINGS };
+      const parsed = JSON.parse(raw);
+      const merged = { ...DEFAULT_SETTINGS, ...parsed };
+      if (!LENGTHS[merged.length]) merged.length = 'medium';
+      if (!PRESETS[merged.provider]) merged.provider = detectProvider(merged.endpoint, merged.model);
+      merged.customInputPrice = Math.max(0, Number(merged.customInputPrice) || 0);
+      merged.customOutputPrice = Math.max(0, Number(merged.customOutputPrice) || 0);
+      return merged;
+    } catch (_) {
+      return { ...DEFAULT_SETTINGS };
+    }
+  }
+
+  function saveSettingsToStorage(settings) {
+    try {
+      localStorage.setItem(STORAGE_SETTINGS, JSON.stringify(settings));
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function loadMoodContext() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_MOOD) || 'null');
+      const moods = Array.isArray(parsed?.moods)
+        ? parsed.moods.filter((mood) => typeof mood === 'string' && mood.trim()).slice(0, 12)
+        : [];
+      const event = typeof parsed?.event === 'string' ? parsed.event : '';
+      return { moods, event };
+    } catch (_) {
+      return { moods: [], event: '' };
+    }
+  }
+
+  function saveMoodContextToStorage(value) {
+    try {
+      if (!value.moods.length && !value.event.trim()) {
+        localStorage.removeItem(STORAGE_MOOD);
+      } else {
+        localStorage.setItem(STORAGE_MOOD, JSON.stringify(value));
+      }
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /* ============================== 状态 ============================== */
+  let settings = loadSettings();
+  let moodContext = loadMoodContext();
+  let usageStats = loadUsageStats();
+  let quoteHistory = loadQuoteHistory();
+  const state = {
+    quote: null,
+    quoteSeq: 0,
+    quoteController: null,
+    quoteBusy: false,
+    quotePending: false,
+    conversationVersion: 0,
+    aiOpen: false,
+    aiStreaming: false,
+    aiRaw: '',
+    aiReasoning: '',
+    aiAbort: null,
+    aiRenderFrame: 0,
+    aiReasoningFrame: 0,
+    aiUsage: null,
+    aiUsageFromApi: false,
+    aiPromptText: '',
+    aiQuoteText: '',
+    llmMessages: [],
+    conversationSaved: false,
+    currentEntryId: null,
+    historyCursor: -1,
+    chatBusy: false,
+    chatAbort: null,
+    chatRaw: '',
+    chatReasoning: '',
+    chatUsage: null,
+    chatPromptText: '',
+    chatRenderFrame: 0,
+    chatReasoningFrame: 0,
+    modalOpen: false,
+    moodOpen: false,
+    usageOpen: false,
+    historyOpen: false
+  };
+
+  const els = {
+    themeBtn: $('themeBtn'),
+    historyBtn: $('historyBtn'),
+    backBtn: $('backBtn'),
+    usageBtn: $('usageBtn'),
+    usageDot: $('usageDot'),
+    settingsBtn: $('settingsBtn'),
+    category: $('category'),
+    quoteShell: $('quoteShell'),
+    quoteText: $('quoteText'),
+    quoteAuthor: $('quoteAuthor'),
+    quoteSource: $('quoteSource'),
+    refreshBtn: $('refreshBtn'),
+    copyBtn: $('copyBtn'),
+    moodBtn: $('moodBtn'),
+    contextDot: $('contextDot'),
+    contextStrip: $('contextStrip'),
+    contextStripText: $('contextStripText'),
+    aiBtn: $('aiBtn'),
+    aiPanel: $('aiPanel'),
+    aiContextBadge: $('aiContextBadge'),
+    aiLive: $('aiLive'),
+    aiLiveText: $('aiLiveText'),
+    aiSub: $('aiSub'),
+    reasoningBox: $('reasoningBox'),
+    reasoningLabel: $('reasoningLabel'),
+    reasoningCount: $('reasoningCount'),
+    reasoningText: $('reasoningText'),
+    thinkingText: $('thinkingText'),
+    aiLoading: $('aiLoading'),
+    aiError: $('aiError'),
+    aiErrorTitle: $('aiErrorTitle'),
+    aiErrorText: $('aiErrorText'),
+    aiErrorRetry: $('aiErrorRetry'),
+    aiErrorSettings: $('aiErrorSettings'),
+    aiContent: $('aiContent'),
+    aiSaveBtn: $('aiSaveBtn'),
+    aiCopyBtn: $('aiCopyBtn'),
+    aiRetryBtn: $('aiRetryBtn'),
+    aiCloseBtn: $('aiCloseBtn'),
+    aiLengthTag: $('aiLengthTag'),
+    aiUsageTag: $('aiUsageTag'),
+    chatThread: $('chatThread'),
+    chatForm: $('chatForm'),
+    chatInput: $('chatInput'),
+    chatSend: $('chatSend'),
+    usageOverlay: $('usageOverlay'),
+    usageBody: $('usageBody'),
+    usageClose: $('usageClose'),
+    usageDone: $('usageDone'),
+    usageClear: $('usageClear'),
+    usageTotalTokens: $('usageTotalTokens'),
+    usageBreakdown: $('usageBreakdown'),
+    usageTotalCost: $('usageTotalCost'),
+    usageCostNote: $('usageCostNote'),
+    usageRequests: $('usageRequests'),
+    usageLast: $('usageLast'),
+    usagePriceAuto: $('usagePriceAuto'),
+    usagePriceCustom: $('usagePriceCustom'),
+    customInputPrice: $('customInputPrice'),
+    customOutputPrice: $('customOutputPrice'),
+    savePricing: $('savePricing'),
+    usageNote: $('usageNote'),
+    usageHistory: $('usageHistory'),
+    historyOverlay: $('historyOverlay'),
+    historyBody: $('historyBody'),
+    historyClose: $('historyClose'),
+    historyClear: $('historyClear'),
+    historyDone: $('historyDone'),
+    historyList: $('historyList'),
+    overlay: $('settingsOverlay'),
+    settingsBody: $('settingsBody'),
+    moodOverlay: $('moodOverlay'),
+    moodBody: $('moodBody'),
+    moodClose: $('moodClose'),
+    moodGrid: $('moodGrid'),
+    eventInput: $('eventInput'),
+    eventCount: $('eventCount'),
+    moodClear: $('moodClear'),
+    moodCancel: $('moodCancel'),
+    moodSave: $('moodSave'),
+    settingsClose: $('settingsClose'),
+    cancelBtn: $('cancelBtn'),
+    saveBtn: $('saveBtn'),
+    resetBtn: $('resetBtn'),
+    providerRow: $('providerRow'),
+    endpointInput: $('endpointInput'),
+    modelInput: $('modelInput'),
+    keyInput: $('keyInput'),
+    revealKey: $('revealKey'),
+    hitokotoInput: $('hitokotoInput'),
+    lengthGrid: $('lengthGrid'),
+    deepModelRow: $('deepModelRow'),
+    thinkBox: $('thinkBox'),
+    thinkToggle: $('thinkToggle'),
+    testBtn: $('testBtn'),
+    testStatus: $('testStatus'),
+    toast: $('toast'),
+    toastText: $('toastText')
+  };
+
+  let selectedProvider = 'deepseek';
+  let selectedLength = 'medium';
+  let selectedDeepThink = false;
+  let moodSelection = [];
+  let toastTimer = 0;
+
+  /* ============================== 主题 ============================== */
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme;
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f2efe7' : '#0c0e0d');
+    try { localStorage.setItem(STORAGE_THEME, theme); } catch (_) {}
+  }
+
+  function initTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem(STORAGE_THEME); } catch (_) {}
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+  }
+
+  els.themeBtn.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+  });
+
+  /* ============================== 提示 ============================== */
+  function toast(message) {
+    els.toastText.textContent = message;
+    els.toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => els.toast.classList.remove('show'), 2200);
+  }
+
+  async function copyText(text) {
+    const value = String(text || '');
+    if (!value) return false;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(value);
+        return true;
+      }
+    } catch (_) {}
+    try {
+      const area = document.createElement('textarea');
+      area.value = value;
+      area.setAttribute('readonly', '');
+      area.style.cssText = 'position:fixed;top:0;left:-9999px;width:2em;height:2em;opacity:0;';
+      document.body.appendChild(area);
+      area.select();
+      area.setSelectionRange(0, value.length);
+      const ok = document.execCommand('copy');
+      area.remove();
+      return ok;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /* ============================== 一言 ============================== */
+  function randomFallback(exclude) {
+    let pool = FALLBACK_QUOTES;
+    if (exclude) {
+      const filtered = FALLBACK_QUOTES.filter((q) => q.text !== exclude.text);
+      if (filtered.length) pool = filtered;
+    }
+    return { ...pool[Math.floor(Math.random() * pool.length)], local: true };
+  }
+
+  function quoteMetaText(quote) {
+    if (!quote) return '';
+    const from = safeText(quote.from).replace(/^《|》$/g, '');
+    const who = safeText(quote.who);
+    if (who && from) return who + '《' + from + '》';
+    if (who) return who;
+    if (from) return '《' + from + '》';
+    return '佚名';
+  }
+
+  function paintQuote(quote) {
+    state.quote = quote;
+    // 在标点后加入换行机会，避免中文句子在词中间被折断。
+    const textNode = els.quoteText;
+    textNode.textContent = '';
+    const parts = quote.text.split(/([，。！？；：、,.!?;:—…]+)/);
+    parts.forEach((part) => {
+      if (!part) return;
+      textNode.appendChild(document.createTextNode(part));
+      if (/^[，。！？；：、,.!?;:—…]+$/.test(part)) {
+        textNode.appendChild(document.createElement('wbr'));
+      }
+    });
+    els.quoteText.className = '';
+    const length = Array.from(quote.text).length;
+    if (length > 70) els.quoteText.classList.add('is-xlong');
+    else if (length > 38) els.quoteText.classList.add('is-long');
+
+    const from = safeText(quote.from).replace(/^《|》$/g, '');
+    const who = safeText(quote.who);
+    els.quoteAuthor.textContent = who || (from ? '' : '佚名');
+    els.quoteSource.textContent = from ? '《' + from + '》' : '';
+    els.category.textContent = TYPES[quote.type] || (quote.local ? '拾言' : '一言');
+  }
+
+  async function loadQuote(options = {}) {
+    const { initial = false } = options;
+    if (state.quoteBusy) {
+      // 连点换一句时只排队一次，避免多个请求/动画互相覆盖。
+      state.quotePending = true;
+      return;
+    }
+    state.quoteBusy = true;
+    state.quotePending = false;
+    els.refreshBtn.classList.add('is-spinning');
+    els.refreshBtn.disabled = true;
+    clearConversation();
+
+    const controller = new AbortController();
+    state.quoteController = controller;
+    const timer = setTimeout(() => controller.abort(), 9000);
+
+    let nextQuote = null;
+    try {
+      let base = String(settings.hitokotoEndpoint || DEFAULT_SETTINGS.hitokotoEndpoint).trim() || DEFAULT_SETTINGS.hitokotoEndpoint;
+      if (!/^https?:\/\//i.test(base)) base = 'https://' + base;
+      const url = new URL(base);
+      if (!url.searchParams.has('encode')) url.searchParams.set('encode', 'json');
+      if (!url.searchParams.has('charset')) url.searchParams.set('charset', 'utf-8');
+      if (!url.searchParams.has('c')) {
+        ['d', 'i', 'k'].forEach((c) => url.searchParams.append('c', c));
+      }
+
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const response = await fetch(url.toString(), {
+          signal: controller.signal,
+          cache: 'no-store',
+          credentials: 'omit',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        if (!data || !safeText(data.hitokoto)) throw new Error('返回格式不正确');
+        const candidate = {
+          text: safeText(data.hitokoto),
+          from: safeText(data.from),
+          who: safeText(data.from_who),
+          type: safeText(data.type)
+        };
+        if (!initial && state.quote && candidate.text === state.quote.text && attempt === 0) continue;
+        nextQuote = candidate;
+        break;
+      }
+    } catch (error) {
+      nextQuote = randomFallback(state.quote);
+    } finally {
+      clearTimeout(timer);
+    }
+
+    if (!initial && state.quote && nextQuote && nextQuote.text === state.quote.text) {
+      // 接口偶尔会返回同一句；兜底换成本地不同的一句，避免“有动画但没变”。
+      nextQuote = randomFallback(state.quote);
+    }
+
+    try {
+      if (!nextQuote) return;
+      if (initial) {
+        paintQuote(nextQuote);
+      } else {
+        els.quoteShell.classList.add('is-swapping');
+        await wait(180);
+        paintQuote(nextQuote);
+      }
+      addHistoryEntry(nextQuote);
+      // 新句子落地后再清一次，防止加载期间有人点了 AI。
+      clearConversation();
+    } finally {
+      els.quoteShell.classList.remove('is-swapping');
+      state.quoteBusy = false;
+      state.quoteController = null;
+      const pending = state.quotePending;
+      state.quotePending = false;
+      if (pending) {
+        loadQuote();
+      } else {
+        els.refreshBtn.classList.remove('is-spinning');
+        els.refreshBtn.disabled = false;
+      }
+    }
+  }
+
+  els.refreshBtn.addEventListener('click', () => loadQuote());
+  els.quoteShell.addEventListener('dblclick', (event) => {
+    event.preventDefault();
+    loadQuote();
+  });
+
+  /* ============================== 复制句子 ============================== */
+  els.copyBtn.addEventListener('click', async () => {
+    if (!state.quote) return;
+    const text = '“' + state.quote.text + '”\n—— ' + quoteMetaText(state.quote);
+    const ok = await copyText(text);
+    toast(ok ? '已复制句子与出处' : '复制失败，请手动选择文本');
+  });
+
+  /* ============================== 心境与背景 ============================== */
+  function hasMoodContext() {
+    return moodContext.moods.length > 0 || !!moodContext.event.trim();
+  }
+
+  function isHeavyMoodContext() {
+    if (!hasMoodContext()) return false;
+    if (moodContext.moods.some((mood) => HEAVY_MOODS.has(mood))) return true;
+    return HEAVY_WORDS.some((word) => moodContext.event.includes(word));
+  }
+
+  function moodSummary() {
+    const parts = [];
+    if (moodContext.moods.length) parts.push(moodContext.moods.join('、'));
+    // 主页只显示“有背景”，不把具体经历摊在屏幕上。
+    if (moodContext.event.trim()) parts.push('一段心事');
+    return parts.join(' · ') || '一段心事';
+  }
+
+  function updateMoodUI() {
+    const active = hasMoodContext();
+    els.contextDot.hidden = !active;
+    els.contextStrip.hidden = !active;
+    els.aiContextBadge.hidden = !active;
+    els.moodBtn.classList.toggle('has-context', active);
+    if (active) {
+      const summary = moodSummary();
+      els.contextStripText.textContent = summary;
+      els.contextStrip.title = '修改心境：' + summary;
+      els.moodBtn.title = '修改心境：' + summary;
+      els.moodBtn.setAttribute('aria-label', '修改心境：' + summary);
+      els.aiBtn.title = '像朋友一样聊聊这句话和此刻';
+    } else {
+      els.contextStripText.textContent = '';
+      els.contextStrip.title = '修改心境';
+      els.moodBtn.title = '设置心境与最近遇到的事';
+      els.moodBtn.setAttribute('aria-label', '设置心境与最近遇到的事');
+      els.aiBtn.title = '让 AI 解释这句话，并结合此刻';
+    }
+  }
+
+  function renderMoodChips() {
+    $$('.mood-chip', els.moodGrid).forEach((chip) => {
+      const active = moodSelection.includes(chip.dataset.mood);
+      chip.classList.toggle('active', active);
+      chip.setAttribute('aria-pressed', String(active));
+    });
+  }
+
+  function updateEventCount() {
+    els.eventCount.textContent = String(els.eventInput.value.length);
+  }
+
+  function openMood() {
+    if (state.moodOpen || state.modalOpen || state.usageOpen || state.historyOpen) return;
+    state.moodOpen = true;
+    moodSelection = moodContext.moods.slice();
+    els.eventInput.value = moodContext.event || '';
+    renderMoodChips();
+    updateEventCount();
+    els.moodOverlay.hidden = false;
+    els.moodBody.scrollTop = 0;
+    els.moodBtn.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('modal-open');
+    setTimeout(() => {
+      els.moodBody.scrollTop = 0;
+    }, 80);
+  }
+
+  function closeMood() {
+    if (!state.moodOpen) return;
+    state.moodOpen = false;
+    els.moodOverlay.hidden = true;
+    els.moodBtn.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('modal-open');
+  }
+
+  function commitMood() {
+    const event = els.eventInput.value.trim();
+    const before = JSON.stringify(moodContext);
+    const aiWasOpen = state.aiOpen;
+    moodContext = {
+      moods: Array.from(new Set(moodSelection)),
+      event
+    };
+    const changed = before !== JSON.stringify(moodContext);
+    const saved = saveMoodContextToStorage(moodContext);
+    closeMood();
+    updateMoodUI();
+    if (changed && aiWasOpen) clearConversation();
+    if (!hasMoodContext()) {
+      toast('已清除心境，只解读句子');
+    } else if (changed && aiWasOpen) {
+      toast('心境已更新，点击 AI 解读重新生成');
+    } else {
+      toast(saved ? '心境已保存，AI 会结合它来解读' : '已应用心境（浏览器禁止持久化）');
+    }
+  }
+
+  els.moodBtn.addEventListener('click', openMood);
+  els.contextStrip.addEventListener('click', openMood);
+  els.moodClose.addEventListener('click', closeMood);
+  els.moodCancel.addEventListener('click', closeMood);
+  els.moodOverlay.addEventListener('mousedown', (event) => {
+    if (event.target === els.moodOverlay) closeMood();
+  });
+  els.moodGrid.addEventListener('click', (event) => {
+    const chip = event.target.closest('.mood-chip');
+    if (!chip) return;
+    const mood = chip.dataset.mood;
+    const index = moodSelection.indexOf(mood);
+    if (index >= 0) moodSelection.splice(index, 1);
+    else moodSelection.push(mood);
+    renderMoodChips();
+  });
+  els.eventInput.addEventListener('input', updateEventCount);
+  els.moodClear.addEventListener('click', () => {
+    moodSelection = [];
+    els.eventInput.value = '';
+    renderMoodChips();
+    updateEventCount();
+    els.eventInput.focus({ preventScroll: true });
+  });
+  els.moodSave.addEventListener('click', commitMood);
+
+  /* ============================== 用量与费用 ============================== */
+  function emptyUsageStats() {
+    return {
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+      totalCost: 0,
+      requests: 0,
+      unknownCosts: 0,
+      history: []
+    };
+  }
+
+  function loadUsageStats() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_USAGE) || 'null');
+      if (!parsed || typeof parsed !== 'object') return emptyUsageStats();
+      const stats = emptyUsageStats();
+      const number = (value) => Math.max(0, Number(value) || 0);
+      stats.promptTokens = number(parsed.promptTokens);
+      stats.completionTokens = number(parsed.completionTokens);
+      stats.totalTokens = number(parsed.totalTokens);
+      stats.totalCost = number(parsed.totalCost);
+      stats.requests = Math.round(number(parsed.requests));
+      stats.unknownCosts = Math.round(number(parsed.unknownCosts));
+      if (Array.isArray(parsed.history)) {
+        stats.history = parsed.history
+          .filter((item) => item && typeof item === 'object')
+          .slice(0, USAGE_HISTORY_MAX)
+          .map((item) => ({
+            ts: Number(item.ts) || Date.now(),
+            model: safeText(item.model).slice(0, 60) || '未知模型',
+            quote: safeText(item.quote).slice(0, 40),
+            prompt: Math.max(0, Number(item.prompt) || 0),
+            completion: Math.max(0, Number(item.completion) || 0),
+            total: Math.max(0, Number(item.total) || 0),
+            cost: item.cost === null || item.cost === undefined ? null : Math.max(0, Number(item.cost) || 0),
+            estimated: !!item.estimated,
+            tier: safeText(item.tier).slice(0, 20),
+            kind: safeText(item.kind).slice(0, 10)
+          }));
+      }
+      return stats;
+    } catch (_) {
+      return emptyUsageStats();
+    }
+  }
+
+  function saveUsageStats() {
+    try {
+      localStorage.setItem(STORAGE_USAGE, JSON.stringify(usageStats));
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function trimLLMMessages(messages) {
+    if (messages.length <= LLM_MESSAGES_MAX) return messages;
+    return messages.slice(0, 3).concat(messages.slice(-(LLM_MESSAGES_MAX - 3)));
+  }
+
+  function sanitizeLLMMessages(messages) {
+    if (!Array.isArray(messages)) return [];
+    return trimLLMMessages(messages
+      .filter((message) => message && ['system', 'user', 'assistant'].includes(message.role))
+      .slice(0, LLM_MESSAGES_MAX * 2)
+      .map((message) => ({
+        role: message.role,
+        content: String(message.content || '').slice(0, 20000),
+        reasoning: message.reasoning ? String(message.reasoning).slice(0, 12000) : ''
+      }))
+      .filter((message) => message.content.trim()));
+  }
+
+  function loadQuoteHistory() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_HISTORY) || 'null');
+      if (!Array.isArray(parsed)) return [];
+      return parsed
+        .filter((entry) => entry && entry.quote && typeof entry.quote.text === 'string' && entry.quote.text.trim())
+        .map((entry) => {
+          const messages = entry.saved ? sanitizeLLMMessages(entry.llmMessages) : [];
+          return {
+            id: String(entry.id || ''),
+            quote: {
+              text: String(entry.quote.text).slice(0, 1000),
+              from: String(entry.quote.from || '').slice(0, 200),
+              who: String(entry.quote.who || '').slice(0, 120),
+              type: String(entry.quote.type || '').slice(0, 8)
+            },
+            createdAt: Number(entry.createdAt) || Date.now(),
+            updatedAt: Number(entry.updatedAt) || Number(entry.createdAt) || Date.now(),
+            saved: !!entry.saved && messages.length >= 3,
+            llmMessages: messages,
+            context: {
+              moods: Array.isArray(entry.context?.moods) ? entry.context.moods.filter((m) => typeof m === 'string').slice(0, 12) : [],
+              event: typeof entry.context?.event === 'string' ? entry.context.event : ''
+            },
+            model: String(entry.model || '').slice(0, 60)
+          };
+        })
+        .filter((entry) => entry.id)
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .slice(0, QUOTE_HISTORY_MAX);
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function persistQuoteHistory() {
+    try {
+      localStorage.setItem(STORAGE_HISTORY, JSON.stringify(quoteHistory));
+      return true;
+    } catch (_) {
+      // 本地空间不足时优先保留最近的记录，再试一次。
+      quoteHistory = quoteHistory.slice(0, Math.max(8, Math.floor(quoteHistory.length / 2)));
+      try {
+        localStorage.setItem(STORAGE_HISTORY, JSON.stringify(quoteHistory));
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+  }
+
+  function estimateTokenCount(text) {
+    let cjk = 0;
+    let other = 0;
+    for (const char of String(text || '')) {
+      if (/[\u3400-\u9fff\uf900-\ufaff]/.test(char)) cjk++;
+      else other++;
+    }
+    return Math.max(1, Math.ceil(cjk * 0.6 + other * 0.3) + 4);
+  }
+
+  function isBeijingPeak(ts) {
+    const date = new Date(ts + 8 * 60 * 60 * 1000);
+    const day = date.getUTCDay();
+    if (day === 0 || day === 6) return false;
+    const minutes = date.getUTCHours() * 60 + date.getUTCMinutes();
+    return (minutes >= 9 * 60 && minutes < 12 * 60) || (minutes >= 14 * 60 && minutes < 18 * 60);
+  }
+
+  function getUsagePricePlan(ts = Date.now()) {
+    if (isDeepSeekEndpoint(settings.endpoint)) {
+      const key = /pro/i.test(settings.model) ? 'pro' : 'flash';
+      const peak = isBeijingPeak(ts);
+      const rates = DEEPSEEK_RATES[key][peak ? 'peak' : 'offPeak'];
+      return {
+        kind: 'deepseek',
+        key,
+        label: 'DeepSeek ' + DEEPSEEK_RATES[key].label,
+        tier: peak ? '高峰' : '空闲',
+        rates
+      };
+    }
+    const input = Math.max(0, Number(settings.customInputPrice) || 0);
+    const output = Math.max(0, Number(settings.customOutputPrice) || 0);
+    if (input <= 0 && output <= 0) {
+      return { kind: 'custom', key: 'custom', label: '自定义接口', tier: '未配置单价', rates: null };
+    }
+    return {
+      kind: 'custom',
+      key: 'custom',
+      label: '自定义接口',
+      tier: '自定义',
+      rates: { hit: input, miss: input, output }
+    };
+  }
+
+  function normalizeUsage(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+    const number = (value) => Math.max(0, Math.round(Number(value) || 0));
+    const prompt = number(raw.prompt_tokens ?? raw.input_tokens);
+    const completion = number(raw.completion_tokens ?? raw.output_tokens);
+    const total = Math.max(number(raw.total_tokens), prompt + completion);
+    if (!prompt && !completion && !total) return null;
+    let hit = number(raw.prompt_cache_hit_tokens ?? raw.prompt_tokens_details?.cached_tokens);
+    hit = Math.min(hit, prompt);
+    let miss = raw.prompt_cache_miss_tokens === undefined
+      ? Math.max(0, prompt - hit)
+      : number(raw.prompt_cache_miss_tokens);
+    if (hit + miss < prompt) miss = Math.max(0, prompt - hit);
+    if (hit + miss > prompt) miss = Math.max(0, prompt - hit);
+    const reasoning = number(raw.completion_tokens_details?.reasoning_tokens ?? raw.reasoning_tokens);
+    return { prompt, completion, total, cacheHit: hit, cacheMiss: miss, reasoning };
+  }
+
+  function calculateUsageCost(usage, plan) {
+    if (!usage || !plan.rates) return null;
+    const value = (
+      usage.cacheHit * plan.rates.hit +
+      usage.cacheMiss * plan.rates.miss +
+      usage.completion * plan.rates.output
+    ) / 1000000;
+    return Number.isFinite(value) ? value : null;
+  }
+
+  function formatTokens(value) {
+    return Math.round(Number(value) || 0).toLocaleString('zh-CN');
+  }
+
+  function formatCNY(cost) {
+    if (cost === null || cost === undefined || !Number.isFinite(Number(cost))) return '—';
+    const value = Number(cost);
+    if (value <= 0) return '¥0';
+    if (value < 0.0001) return '<¥0.0001';
+    if (value < 0.01) return '¥' + value.toFixed(4);
+    if (value < 1) return '¥' + value.toFixed(3);
+    return '¥' + value.toFixed(2);
+  }
+
+  function formatUsageTime(ts) {
+    try {
+      return new Intl.DateTimeFormat('zh-CN', {
+        timeZone: 'Asia/Shanghai',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).format(new Date(ts));
+    } catch (_) {
+      return new Date(ts).toLocaleString('zh-CN');
+    }
+  }
+
+  function usageCostLabel(record) {
+    if (!record) return '—';
+    return record.cost === null ? '未计价' : formatCNY(record.cost);
+  }
+
+  function usageRowHTML(record) {
+    const estimate = record.estimated ? ' · 估算' : ' · API usage';
+    const tier = record.tier ? ' · ' + record.tier : '';
+    const kind = record.kind ? record.kind + ' · ' : '';
+    return (
+      '<div class="usage-row">' +
+        '<div class="usage-row-head">' +
+          '<span class="usage-row-model">' + escapeHTML(record.model) + '</span>' +
+          '<span class="usage-row-time">' + escapeHTML(formatUsageTime(record.ts)) + '</span>' +
+          '<span class="usage-row-cost">' + usageCostLabel(record) + '</span>' +
+        '</div>' +
+        '<div class="usage-row-sub">' + kind + formatTokens(record.total) + ' tokens · 输入 ' + formatTokens(record.prompt) + ' / 输出 ' + formatTokens(record.completion) + estimate + tier + '</div>' +
+        (record.quote ? '<div class="usage-row-quote">“' + escapeHTML(record.quote) + '”</div>' : '') +
+      '</div>'
+    );
+  }
+
+  function renderUsageLast(record) {
+    if (!record) {
+      els.usageLast.innerHTML = '<span class="usage-empty">还没有记录。点一次「AI 解读」，这里就会出现本轮用量。</span>';
+      return;
+    }
+    const estimate = record.estimated ? '估算' : 'API usage';
+    const kind = record.kind ? record.kind + ' · ' : '';
+    els.usageLast.innerHTML =
+      '<div class="usage-row-head">' +
+        '<span class="usage-row-model">' + escapeHTML(record.model) + '</span>' +
+        '<span class="usage-row-time">' + escapeHTML(formatUsageTime(record.ts)) + '</span>' +
+        '<span class="usage-row-cost">' + usageCostLabel(record) + '</span>' +
+      '</div>' +
+      '<div class="usage-row-sub">' + kind + formatTokens(record.total) + ' tokens · 输入 ' + formatTokens(record.prompt) + ' / 输出 ' + formatTokens(record.completion) + ' · ' + estimate + (record.tier ? ' · ' + record.tier : '') + '</div>' +
+      (record.quote ? '<div class="usage-row-quote">“' + escapeHTML(record.quote) + '”</div>' : '');
+  }
+
+  function renderUsageHistory() {
+    const earlier = usageStats.history.slice(1);
+    if (!earlier.length) {
+      els.usageHistory.innerHTML = '<span class="usage-empty">还没有更早的记录。</span>';
+      return;
+    }
+    els.usageHistory.innerHTML = earlier.map(usageRowHTML).join('');
+  }
+
+  function updateUsageSummary(record) {
+    els.usageTotalTokens.textContent = formatTokens(usageStats.totalTokens);
+    els.usageBreakdown.textContent = '输入 ' + formatTokens(usageStats.promptTokens) + ' / 输出 ' + formatTokens(usageStats.completionTokens);
+    els.usageTotalCost.textContent = formatCNY(usageStats.totalCost);
+    els.usageCostNote.textContent = usageStats.unknownCosts > 0
+      ? '含 ' + usageStats.unknownCosts + ' 次未计价'
+      : '人民币估算';
+    els.usageRequests.textContent = formatTokens(usageStats.requests);
+    els.usageDot.hidden = usageStats.requests === 0;
+    renderUsageLast(record || usageStats.history[0]);
+    renderUsageHistory();
+  }
+
+  function updateUsagePricingUI() {
+    const plan = getUsagePricePlan();
+    const isDeepSeek = plan.kind === 'deepseek';
+    els.usagePriceCustom.hidden = isDeepSeek;
+    if (isDeepSeek) {
+      const rates = plan.rates;
+      els.usagePriceAuto.innerHTML =
+        '<div class="usage-price-head">' + plan.label + ' · 当前' + plan.tier + '时段</div>' +
+        '<div class="usage-price-rates">' +
+          '<span>缓存命中 <b>¥' + rates.hit + '</b></span>' +
+          '<span>缓存未命中 <b>¥' + rates.miss + '</b></span>' +
+          '<span>输出 <b>¥' + rates.output + '</b></span>' +
+          '<span>每百万 tokens</span>' +
+        '</div>';
+      els.usageNote.textContent = 'DeepSeek 官方价格，自动区分高峰/空闲（北京时间工作日 9:00–12:00、14:00–18:00 为高峰）。法定节假日未单独识别，费用以平台账单为准。';
+    } else {
+      const input = Math.max(0, Number(settings.customInputPrice) || 0);
+      const output = Math.max(0, Number(settings.customOutputPrice) || 0);
+      els.customInputPrice.value = input || '';
+      els.customOutputPrice.value = output || '';
+      els.usagePriceAuto.innerHTML = (input > 0 || output > 0)
+        ? '<div class="usage-price-head">自定义单价</div><div class="usage-price-rates"><span>输入 <b>¥' + input + '</b></span><span>输出 <b>¥' + output + '</b></span><span>每百万 tokens</span></div>'
+        : '<div class="usage-price-head">自定义接口尚未配置单价</div><div class="usage-price-rates"><span>费用将显示为「未计价」，token 统计仍然有效。</span></div>';
+      els.usageNote.textContent = '自定义接口没有统一价格。填写你的实际输入/输出单价后，下一轮请求开始按此计算；只影响之后的记录。';
+    }
+  }
+
+  function setAIUsageTag(record) {
+    if (!record) {
+      els.aiUsageTag.hidden = true;
+      els.aiUsageTag.textContent = '';
+      return;
+    }
+    els.aiUsageTag.hidden = false;
+    els.aiUsageTag.textContent = '本次 ' + formatTokens(record.total) + ' tokens' +
+      (record.estimated ? '（估算）' : '') + ' · ' + usageCostLabel(record);
+  }
+
+  function resetAIUsageTag() {
+    els.aiUsageTag.hidden = true;
+    els.aiUsageTag.textContent = '';
+  }
+
+  function mergeUsage(existing, incoming) {
+    if (!existing) return incoming;
+    return {
+      prompt: Math.max(existing.prompt, incoming.prompt),
+      completion: Math.max(existing.completion, incoming.completion),
+      total: Math.max(existing.total, incoming.total),
+      cacheHit: Math.max(existing.cacheHit, incoming.cacheHit),
+      cacheMiss: Math.max(existing.cacheMiss, incoming.cacheMiss),
+      reasoning: Math.max(existing.reasoning, incoming.reasoning)
+    };
+  }
+
+  function handleAIUsage(raw) {
+    const usage = normalizeUsage(raw);
+    if (!usage) return;
+    state.aiUsageFromApi = true;
+    state.aiUsage = mergeUsage(state.aiUsage, usage);
+  }
+
+  function handleChatUsage(raw) {
+    const usage = normalizeUsage(raw);
+    if (!usage) return;
+    state.chatUsage = mergeUsage(state.chatUsage, usage);
+  }
+
+  function recordUsageTurn({ content, reasoning, promptText, usage, quoteText, kind }) {
+    if (!usage && !content && !reasoning) return;
+    const ts = Date.now();
+    const plan = getUsagePricePlan(ts);
+    let normalizedUsage = usage;
+    let estimated = false;
+    if (!normalizedUsage) {
+      const prompt = estimateTokenCount(promptText);
+      const completion = estimateTokenCount(content + '\n' + reasoning);
+      normalizedUsage = {
+        prompt,
+        completion,
+        total: prompt + completion,
+        cacheHit: 0,
+        cacheMiss: prompt,
+        reasoning: 0
+      };
+      estimated = true;
+    }
+    const cost = calculateUsageCost(normalizedUsage, plan);
+    const record = {
+      ts,
+      model: aiModelLabel() || settings.model,
+      quote: (quoteText || (state.quote ? state.quote.text : '')).slice(0, 36),
+      prompt: normalizedUsage.prompt,
+      completion: normalizedUsage.completion,
+      total: normalizedUsage.total,
+      cost,
+      estimated,
+      tier: plan.tier,
+      kind: kind || '解读'
+    };
+    usageStats.promptTokens += normalizedUsage.prompt;
+    usageStats.completionTokens += normalizedUsage.completion;
+    usageStats.totalTokens += normalizedUsage.total;
+    usageStats.requests += 1;
+    if (cost === null) usageStats.unknownCosts += 1;
+    else usageStats.totalCost += cost;
+    usageStats.history.unshift(record);
+    usageStats.history = usageStats.history.slice(0, USAGE_HISTORY_MAX);
+    saveUsageStats();
+    updateUsageSummary(record);
+    setAIUsageTag(record);
+  }
+
+  function openUsage() {
+    if (state.usageOpen || state.modalOpen || state.moodOpen || state.historyOpen) return;
+    state.usageOpen = true;
+    updateUsageSummary();
+    updateUsagePricingUI();
+    els.usageOverlay.hidden = false;
+    els.usageBody.scrollTop = 0;
+    els.usageBtn.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('modal-open');
+    setTimeout(() => {
+      els.usageBody.scrollTop = 0;
+    }, 80);
+  }
+
+  function closeUsage() {
+    if (!state.usageOpen) return;
+    state.usageOpen = false;
+    els.usageOverlay.hidden = true;
+    els.usageBtn.setAttribute('aria-expanded', 'false');
+    disarmUsageClear();
+    document.body.classList.remove('modal-open');
+  }
+
+  let usageClearArmed = false;
+  let usageClearTimer = 0;
+  function disarmUsageClear() {
+    usageClearArmed = false;
+    clearTimeout(usageClearTimer);
+    els.usageClear.textContent = '清空记录';
+    els.usageClear.style.color = '';
+  }
+
+  els.usageBtn.addEventListener('click', openUsage);
+  els.usageClose.addEventListener('click', closeUsage);
+  els.usageDone.addEventListener('click', closeUsage);
+  els.usageOverlay.addEventListener('mousedown', (event) => {
+    if (event.target === els.usageOverlay) closeUsage();
+  });
+  els.usageClear.addEventListener('click', () => {
+    if (!usageClearArmed) {
+      usageClearArmed = true;
+      els.usageClear.textContent = '再点一次确认';
+      els.usageClear.style.color = 'var(--gold)';
+      usageClearTimer = setTimeout(disarmUsageClear, 2600);
+      return;
+    }
+    disarmUsageClear();
+    usageStats = emptyUsageStats();
+    saveUsageStats();
+    updateUsageSummary();
+    toast('用量记录已清空');
+  });
+  els.savePricing.addEventListener('click', () => {
+    const input = Math.max(0, Number(els.customInputPrice.value) || 0);
+    const output = Math.max(0, Number(els.customOutputPrice.value) || 0);
+    settings = { ...settings, customInputPrice: input, customOutputPrice: output };
+    saveSettingsToStorage(settings);
+    updateUsagePricingUI();
+    updateUsageSummary();
+    toast('单价已保存，下一轮起生效');
+  });
+
+  /* ============================== 句子历史 ============================== */
+  function snapshotMood() {
+    return { moods: moodContext.moods.slice(), event: moodContext.event };
+  }
+
+  function currentHistoryEntry() {
+    if (!state.currentEntryId) return null;
+    return quoteHistory.find((entry) => entry.id === state.currentEntryId) || null;
+  }
+
+  function updateBackButton() {
+    const index = quoteHistory.findIndex((entry) => entry.id === state.currentEntryId);
+    if (index >= 0) state.historyCursor = index;
+    els.backBtn.hidden = !(index >= 0 && index + 1 < quoteHistory.length);
+  }
+
+  function addHistoryEntry(quote) {
+    const entry = {
+      id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+      quote: {
+        text: quote.text,
+        from: quote.from || '',
+        who: quote.who || '',
+        type: quote.type || ''
+      },
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      saved: false,
+      llmMessages: [],
+      context: snapshotMood(),
+      model: aiModelLabel()
+    };
+    quoteHistory.unshift(entry);
+    quoteHistory = quoteHistory.slice(0, QUOTE_HISTORY_MAX);
+    state.currentEntryId = entry.id;
+    state.historyCursor = 0;
+    if (!persistQuoteHistory()) toast('本地空间不足，历史可能无法保存');
+    updateBackButton();
+    if (state.historyOpen) renderHistoryList();
+    return entry;
+  }
+
+  function renderHistoryList() {
+    if (!quoteHistory.length) {
+      els.historyList.innerHTML = '<div class="history-empty">还没有历史记录。<br>换一句或让 AI 解读后，就会出现在这里。</div>';
+      return;
+    }
+    els.historyList.innerHTML = quoteHistory.map((entry) => {
+      const meta = quoteMetaText(entry.quote);
+      const active = entry.id === state.currentEntryId;
+      const saved = entry.saved && entry.llmMessages.length >= 3;
+      return (
+        '<button class="history-item' + (active ? ' active' : '') + '" type="button" data-history-id="' + escapeHTML(entry.id) + '">' +
+          '<div class="history-item-main">' +
+            '<div class="history-quote">“' + escapeHTML(entry.quote.text) + '”</div>' +
+            '<div class="history-meta">' + escapeHTML(meta) + ' · ' + escapeHTML(formatUsageTime(entry.createdAt)) + '</div>' +
+          '</div>' +
+          '<div class="history-side">' +
+            (saved ? '<span class="history-saved"><svg class="icon"><use href="#i-bookmark"></use></svg>对话</span>' : '') +
+            (active ? '<span class="history-current">当前</span>' : '') +
+          '</div>' +
+        '</button>'
+      );
+    }).join('');
+  }
+
+  function openHistory() {
+    if (state.historyOpen || state.modalOpen || state.moodOpen || state.usageOpen) return;
+    state.historyOpen = true;
+    renderHistoryList();
+    els.historyOverlay.hidden = false;
+    els.historyBody.scrollTop = 0;
+    els.historyBtn.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('modal-open');
+    setTimeout(() => { els.historyBody.scrollTop = 0; }, 80);
+  }
+
+  function closeHistory() {
+    if (!state.historyOpen) return;
+    state.historyOpen = false;
+    els.historyOverlay.hidden = true;
+    els.historyBtn.setAttribute('aria-expanded', 'false');
+    disarmHistoryClear();
+    document.body.classList.remove('modal-open');
+  }
+
+  function loadHistoryEntry(entry, index) {
+    if (!entry) return;
+    closeHistory();
+    state.currentEntryId = entry.id;
+    state.historyCursor = index;
+    paintQuote(entry.quote);
+    const saved = entry.saved && entry.llmMessages.length >= 3;
+    if (saved) {
+      if (entry.context) {
+        moodContext = {
+          moods: Array.isArray(entry.context.moods) ? entry.context.moods.slice() : [],
+          event: typeof entry.context.event === 'string' ? entry.context.event : ''
+        };
+        saveMoodContextToStorage(moodContext);
+        updateMoodUI();
+      }
+      restoreConversation(entry);
+    } else {
+      clearConversation();
+    }
+    updateBackButton();
+    updateHistoryListIfOpen();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateHistoryListIfOpen() {
+    if (state.historyOpen) renderHistoryList();
+  }
+
+  let historyClearArmed = false;
+  let historyClearTimer = 0;
+  function disarmHistoryClear() {
+    historyClearArmed = false;
+    clearTimeout(historyClearTimer);
+    els.historyClear.textContent = '清空历史';
+    els.historyClear.style.color = '';
+  }
+
+  els.historyBtn.addEventListener('click', openHistory);
+  els.historyClose.addEventListener('click', closeHistory);
+  els.historyDone.addEventListener('click', closeHistory);
+  els.historyOverlay.addEventListener('mousedown', (event) => {
+    if (event.target === els.historyOverlay) closeHistory();
+  });
+  els.historyList.addEventListener('click', (event) => {
+    const item = event.target.closest('[data-history-id]');
+    if (!item) return;
+    const index = quoteHistory.findIndex((entry) => entry.id === item.dataset.historyId);
+    if (index >= 0) loadHistoryEntry(quoteHistory[index], index);
+  });
+  els.historyClear.addEventListener('click', () => {
+    if (!historyClearArmed) {
+      historyClearArmed = true;
+      els.historyClear.textContent = '再点一次确认';
+      els.historyClear.style.color = 'var(--gold)';
+      historyClearTimer = setTimeout(disarmHistoryClear, 2600);
+      return;
+    }
+    disarmHistoryClear();
+    quoteHistory = [];
+    state.currentEntryId = null;
+    state.historyCursor = -1;
+    state.conversationSaved = false;
+    persistQuoteHistory();
+    updateBackButton();
+    updateSaveButton();
+    renderHistoryList();
+    toast('历史和保存的对话已清空');
+  });
+  els.backBtn.addEventListener('click', () => {
+    const index = quoteHistory.findIndex((entry) => entry.id === state.currentEntryId);
+    if (index >= 0 && index + 1 < quoteHistory.length) {
+      loadHistoryEntry(quoteHistory[index + 1], index + 1);
+    }
+  });
+
+  /* ============================== Markdown ============================== */
+  function renderInline(input) {
+    let text = escapeHTML(input);
+    const codes = [];
+    text = text.replace(/`([^`\n]+)`/g, (_, code) => {
+      codes.push('<code>' + code + '</code>');
+      return '\u0000C' + (codes.length - 1) + '\u0000';
+    });
+    text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, url) => {
+      return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + label + '</a>';
+    });
+    text = text.replace(/\*\*\*([^*\n]+)\*\*\*/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/__([^_\n]+)__/g, '<strong>$1</strong>');
+    text = text.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+    text = text.replace(/~~([^~\n]+)~~/g, '<del>$1</del>');
+    text = text.replace(/\u0000C(\d+)\u0000/g, (_, index) => codes[Number(index)] || '');
+    return text;
+  }
+
+  function splitTableRow(line) {
+    let value = line.trim();
+    if (value.startsWith('|')) value = value.slice(1);
+    if (value.endsWith('|')) value = value.slice(0, -1);
+    return value.split('|').map((cell) => cell.trim());
+  }
+
+  function isTableDivider(line) {
+    return /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?\s*$/.test(line);
+  }
+
+  function renderMarkdown(source) {
+    const src = String(source || '').replace(/\r\n?/g, '\n');
+    if (!src.trim()) return '';
+    const lines = src.split('\n');
+    const out = [];
+    let index = 0;
+
+    const isBlockStart = (line, nextLine) => {
+      if (/^\s*```/.test(line)) return true;
+      if (/^\s{0,3}#{1,6}\s+/.test(line)) return true;
+      if (/^\s{0,3}>\s?/.test(line)) return true;
+      if (/^\s{0,3}([-*+])\s+/.test(line)) return true;
+      if (/^\s{0,3}\d+[.)]\s+/.test(line)) return true;
+      if (/^\s{0,3}([-*_])(\s*\1){2,}\s*$/.test(line)) return true;
+      if (line.includes('|') && nextLine && isTableDivider(nextLine)) return true;
+      return false;
+    };
+
+    while (index < lines.length) {
+      const line = lines[index];
+
+      if (!line.trim()) { index++; continue; }
+
+      const fence = line.match(/^\s*```([^\s`]*)\s*$/);
+      if (fence) {
+        const lang = fence[1] || '';
+        const codeLines = [];
+        index++;
+        while (index < lines.length && !/^\s*```\s*$/.test(lines[index])) {
+          codeLines.push(lines[index]);
+          index++;
+        }
+        if (index < lines.length) index++;
+        out.push(
+          '<pre><code' + (lang ? ' class="language-' + escapeHTML(lang) + '"' : '') + '>' +
+          escapeHTML(codeLines.join('\n')) + '</code></pre>'
+        );
+        continue;
+      }
+
+      const heading = line.match(/^\s{0,3}(#{1,6})\s+(.*?)\s*#*\s*$/);
+      if (heading) {
+        const level = Math.min(Math.max(heading[1].length, 2), 4);
+        out.push('<h' + level + '>' + renderInline(heading[2]) + '</h' + level + '>');
+        index++;
+        continue;
+      }
+
+      if (/^\s{0,3}([-*_])(\s*\1){2,}\s*$/.test(line)) {
+        out.push('<hr>');
+        index++;
+        continue;
+      }
+
+      if (/^\s{0,3}>\s?/.test(line)) {
+        const quoteLines = [];
+        while (index < lines.length && /^\s{0,3}>\s?/.test(lines[index])) {
+          quoteLines.push(lines[index].replace(/^\s{0,3}>\s?/, ''));
+          index++;
+        }
+        out.push('<blockquote>' + renderMarkdown(quoteLines.join('\n')) + '</blockquote>');
+        continue;
+      }
+
+      if (line.includes('|') && index + 1 < lines.length && isTableDivider(lines[index + 1])) {
+        const header = splitTableRow(line);
+        const align = splitTableRow(lines[index + 1]).map((cell) => {
+          const left = cell.startsWith(':');
+          const right = cell.endsWith(':');
+          if (left && right) return 'center';
+          if (right) return 'right';
+          if (left) return 'left';
+          return '';
+        });
+        index += 2;
+        const rows = [];
+        while (index < lines.length && lines[index].includes('|') && lines[index].trim()) {
+          rows.push(splitTableRow(lines[index]));
+          index++;
+        }
+        let table = '<table><thead><tr>';
+        header.forEach((cell, i) => {
+          table += '<th' + (align[i] ? ' style="text-align:' + align[i] + '"' : '') + '>' + renderInline(cell) + '</th>';
+        });
+        table += '</tr></thead><tbody>';
+        rows.forEach((row) => {
+          table += '<tr>';
+          header.forEach((_, i) => {
+            table += '<td' + (align[i] ? ' style="text-align:' + align[i] + '"' : '') + '>' + renderInline(row[i] || '') + '</td>';
+          });
+          table += '</tr>';
+        });
+        table += '</tbody></table>';
+        out.push(table);
+        continue;
+      }
+
+      const unordered = line.match(/^\s{0,3}[-*+]\s+(.*)$/);
+      const ordered = line.match(/^\s{0,3}\d+[.)]\s+(.*)$/);
+      if (unordered || ordered) {
+        const tag = unordered ? 'ul' : 'ol';
+        const items = [];
+        while (index < lines.length) {
+          const current = lines[index];
+          const match = tag === 'ul'
+            ? current.match(/^\s{0,3}[-*+]\s+(.*)$/)
+            : current.match(/^\s{0,3}\d+[.)]\s+(.*)$/);
+          if (!match) break;
+          items.push('<li>' + renderInline(match[1]) + '</li>');
+          index++;
+        }
+        out.push('<' + tag + '>' + items.join('') + '</' + tag + '>');
+        continue;
+      }
+
+      const paragraph = [line.trim()];
+      index++;
+      while (index < lines.length && lines[index].trim() && !isBlockStart(lines[index], lines[index + 1])) {
+        paragraph.push(lines[index].trim());
+        index++;
+      }
+      out.push('<p>' + paragraph.map(renderInline).join('<br>') + '</p>');
+    }
+
+    return out.join('');
+  }
+
+  /* ============================== AI 面板 ============================== */
+  function currentLength() {
+    return LENGTHS[settings.length] || LENGTHS.medium;
+  }
+
+  function aiModelLabel() {
+    const model = String(settings.model || '').toLowerCase();
+    if (isDeepSeekEndpoint(settings.endpoint)) {
+      if (model.includes('pro')) return 'DeepSeek Pro';
+      if (model.includes('flash')) return 'DeepSeek Flash';
+    }
+    const preset = PRESETS[settings.provider];
+    return preset && preset.label !== '自定义' ? preset.label : settings.model;
+  }
+
+  function updateAIMeta() {
+    const length = currentLength();
+    const label = aiModelLabel();
+    const deep = deepThinkEnabled();
+    const lengthLabel = length.chars === null ? '不限字数' : length.label;
+    const extras = [];
+    if (hasMoodContext()) extras.push('陪你聊聊');
+    if (deep) extras.push('深度思考');
+    if (!extras.length) extras.push(length.hint);
+    els.aiSub.textContent = (label || 'AI') + ' · ' + lengthLabel + ' · ' + extras.join(' · ');
+    els.aiLengthTag.textContent = length.chars === null ? '不限字数' : length.label + ' · 约 ' + length.chars + ' 字';
+  }
+
+  function updateChatSendState() {
+    els.chatSend.disabled = state.chatBusy || !els.chatInput.value.trim();
+  }
+
+  function setChatBusy(busy) {
+    state.chatBusy = busy;
+    els.chatInput.disabled = busy;
+    if (busy) els.chatSend.disabled = true;
+    else updateChatSendState();
+    updateSaveButton();
+  }
+
+  function resizeChatInput() {
+    els.chatInput.style.height = 'auto';
+    els.chatInput.style.height = Math.min(els.chatInput.scrollHeight, 112) + 'px';
+  }
+
+  function updateSaveButton() {
+    const canSave = state.llmMessages.length >= 3 && !state.chatBusy;
+    const label = els.aiSaveBtn.querySelector('.label');
+    els.aiSaveBtn.disabled = !canSave;
+    els.aiSaveBtn.classList.toggle('active', canSave && state.conversationSaved);
+    if (label) label.textContent = state.conversationSaved ? '已保存' : '保存';
+    els.aiSaveBtn.title = state.conversationSaved
+      ? '对话已保存在本机历史'
+      : '保存对话到本机历史';
+  }
+
+  function saveCurrentConversation(showToast = true) {
+    if (state.llmMessages.length < 3) return;
+    let entry = currentHistoryEntry();
+    if (!entry) entry = addHistoryEntry(state.quote);
+    entry.saved = true;
+    entry.llmMessages = sanitizeLLMMessages(state.llmMessages);
+    entry.context = snapshotMood();
+    entry.updatedAt = Date.now();
+    entry.model = aiModelLabel();
+    const saved = persistQuoteHistory();
+    if (!saved) {
+      state.conversationSaved = false;
+      updateSaveButton();
+      if (showToast) toast('本地空间不足，对话没有保存');
+      return;
+    }
+    state.conversationSaved = true;
+    updateSaveButton();
+    updateHistoryListIfOpen();
+    if (showToast) toast('对话已保存到本机历史');
+  }
+
+  function showChatComposer() {
+    els.chatForm.hidden = false;
+    els.chatInput.value = '';
+    els.chatInput.disabled = false;
+    resizeChatInput();
+    setChatBusy(false);
+  }
+
+  function appendUserChatEl(text) {
+    const el = document.createElement('div');
+    el.className = 'chat-msg user';
+    el.textContent = text;
+    els.chatThread.appendChild(el);
+    els.chatThread.hidden = false;
+    return el;
+  }
+
+  function createAssistantShell() {
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-msg assistant is-streaming';
+    wrap.innerHTML =
+      '<div class="chat-role"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"></use></svg>AI</div>' +
+      '<details class="reasoning chat-reasoning" hidden>' +
+        '<summary><i class="reasoning-status" aria-hidden="true"></i><span class="reasoning-label">深度思考中…</span><span class="reasoning-count"></span></summary>' +
+        '<div class="reasoning-body" aria-live="off"></div>' +
+      '</details>' +
+      '<div class="chat-typing"><span class="thinking-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="chat-typing-text">正在回复…</span></div>' +
+      '<article class="markdown chat-markdown is-streaming" hidden></article>';
+    els.chatThread.appendChild(wrap);
+    els.chatThread.hidden = false;
+    return {
+      wrap,
+      reasoningBox: wrap.querySelector('.chat-reasoning'),
+      reasoningLabel: wrap.querySelector('.reasoning-label'),
+      reasoningCount: wrap.querySelector('.reasoning-count'),
+      reasoningBody: wrap.querySelector('.reasoning-body'),
+      typing: wrap.querySelector('.chat-typing'),
+      typingText: wrap.querySelector('.chat-typing-text'),
+      markdown: wrap.querySelector('.chat-markdown')
+    };
+  }
+
+  function fillAssistantShell(refs, content, reasoning) {
+    refs.markdown.innerHTML = renderMarkdown(content);
+    refs.markdown.hidden = false;
+    refs.markdown.classList.remove('is-streaming');
+    refs.wrap.classList.remove('is-streaming');
+    if (refs.typing) refs.typing.remove();
+    if (reasoning) {
+      refs.reasoningBox.hidden = false;
+      refs.reasoningBox.classList.remove('is-thinking');
+      refs.reasoningLabel.textContent = '深度思考完成';
+      refs.reasoningBody.textContent = reasoning;
+      refs.reasoningCount.textContent = Array.from(reasoning).length.toLocaleString('zh-CN') + ' 字';
+    } else {
+      refs.reasoningBox.remove();
+    }
+  }
+
+  function renderChatThreadFromMessages(followUps) {
+    els.chatThread.innerHTML = '';
+    els.chatThread.hidden = true;
+    followUps.forEach((message) => {
+      if (message.role === 'user') {
+        appendUserChatEl(message.content);
+      } else if (message.role === 'assistant') {
+        const refs = createAssistantShell();
+        fillAssistantShell(refs, message.content, message.reasoning || '');
+      }
+    });
+    els.chatThread.hidden = !followUps.length;
+  }
+
+  function restoreConversation(entry) {
+    const messages = sanitizeLLMMessages(entry.llmMessages);
+    if (messages.length < 3) {
+      clearConversation();
+      return;
+    }
+    clearConversation();
+    state.llmMessages = messages;
+    state.conversationSaved = true;
+    state.aiRaw = messages[2].content;
+    state.aiReasoning = messages[2].reasoning || '';
+    state.aiQuoteText = entry.quote.text;
+    state.aiOpen = true;
+    state.aiStreaming = false;
+    updateAIMeta();
+    els.aiPanel.hidden = false;
+    els.aiLoading.hidden = true;
+    els.aiError.hidden = true;
+    els.aiErrorRetry.disabled = false;
+    els.aiLive.hidden = true;
+    els.aiContent.innerHTML = renderMarkdown(state.aiRaw);
+    els.aiContent.hidden = false;
+    els.aiContent.classList.remove('is-streaming');
+    els.aiCopyBtn.disabled = false;
+    els.aiRetryBtn.disabled = false;
+    if (state.aiReasoning) {
+      els.reasoningBox.hidden = false;
+      els.reasoningBox.classList.remove('is-thinking');
+      els.reasoningLabel.textContent = '深度思考完成';
+      els.reasoningText.textContent = state.aiReasoning;
+      els.reasoningCount.textContent = Array.from(state.aiReasoning).length.toLocaleString('zh-CN') + ' 字';
+    } else {
+      els.reasoningBox.hidden = true;
+    }
+    resetAIUsageTag();
+    state.chatRaw = '';
+    state.chatReasoning = '';
+    state.chatUsage = null;
+    setChatBusy(false);
+    showChatComposer();
+    renderChatThreadFromMessages(messages.slice(3));
+    updateSaveButton();
+  }
+
+  function clearConversation() {
+    state.conversationVersion++;
+    if (state.aiAbort) {
+      try { state.aiAbort.abort(); } catch (_) {}
+      state.aiAbort = null;
+    }
+    if (state.chatAbort) {
+      try { state.chatAbort.abort(); } catch (_) {}
+      state.chatAbort = null;
+    }
+    state.aiStreaming = false;
+    state.chatBusy = false;
+    state.aiOpen = false;
+    state.llmMessages = [];
+    state.conversationSaved = false;
+    state.aiRaw = '';
+    state.aiReasoning = '';
+    state.aiUsage = null;
+    state.aiUsageFromApi = false;
+    state.aiPromptText = '';
+    state.aiQuoteText = '';
+    state.chatRaw = '';
+    state.chatReasoning = '';
+    state.chatUsage = null;
+    state.chatPromptText = '';
+    els.aiPanel.hidden = true;
+    els.aiLoading.hidden = false;
+    els.aiError.hidden = true;
+    els.aiContent.innerHTML = '';
+    els.aiContent.hidden = true;
+    els.aiContent.classList.remove('is-streaming');
+    els.aiLive.hidden = true;
+    els.reasoningBox.hidden = true;
+    els.reasoningBox.open = false;
+    els.reasoningBox.classList.remove('is-thinking');
+    els.reasoningText.textContent = '';
+    els.reasoningCount.textContent = '';
+    els.chatThread.innerHTML = '';
+    els.chatThread.hidden = true;
+    els.chatForm.hidden = true;
+    els.chatInput.value = '';
+    els.chatInput.disabled = false;
+    els.chatSend.disabled = true;
+    els.aiCopyBtn.disabled = true;
+    els.aiRetryBtn.disabled = false;
+    els.aiSaveBtn.disabled = true;
+    els.aiSaveBtn.classList.remove('active');
+    const label = els.aiSaveBtn.querySelector('.label');
+    if (label) label.textContent = '保存';
+    resetAIUsageTag();
+  }
+
+  function openAIConversation() {
+    if (state.llmMessages.length < 3) return;
+    state.aiOpen = true;
+    els.aiPanel.hidden = false;
+    els.aiLoading.hidden = true;
+    els.aiError.hidden = true;
+    els.aiLive.hidden = true;
+    updateAIMeta();
+    if (state.aiRaw) {
+      els.aiContent.innerHTML = renderMarkdown(state.aiRaw);
+      els.aiContent.hidden = false;
+      els.aiContent.classList.remove('is-streaming');
+      els.aiCopyBtn.disabled = false;
+    }
+    els.aiRetryBtn.disabled = false;
+    els.chatForm.hidden = false;
+    setChatBusy(false);
+    updateSaveButton();
+    requestAnimationFrame(() => {
+      els.aiPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+  }
+
+  function handleAIButton() {
+    if (state.llmMessages.length >= 3) openAIConversation();
+    else startAnalysis();
+  }
+
+  function buildChatRequestMessages() {
+    const messages = state.llmMessages.map((message) => ({ role: message.role, content: message.content }));
+    if (messages[0]?.role === 'system') {
+      messages[0] = {
+        role: 'system',
+        content: messages[0].content +
+          '\n\n现在进入连续对话模式：请像朋友一样回应对方的追问，直接回答他刚说的话；不要重复之前已经说过的整段解读，不要重新解释整句话，不要上课。除非对方要求展开，回答可以比第一次短。'
+      };
+    }
+    return messages;
+  }
+
+  function startChatTurn() {
+    if (state.chatBusy || state.llmMessages.length < 3) return;
+    const text = els.chatInput.value.trim();
+    if (!text) return;
+    if (!settings.endpoint || !settings.model) {
+      openSettings();
+      toast('请先配置 AI 接口');
+      return;
+    }
+
+    const version = state.conversationVersion;
+    const userMessage = { role: 'user', content: text };
+    state.llmMessages.push(userMessage);
+    const userEl = appendUserChatEl(text);
+    els.chatInput.value = '';
+    resizeChatInput();
+    setChatBusy(true);
+    state.chatRaw = '';
+    state.chatReasoning = '';
+    state.chatUsage = null;
+    const assistant = createAssistantShell();
+
+    const requestMessages = buildChatRequestMessages();
+    state.chatPromptText = requestMessages.map((message) => message.content).join('\n');
+    const controller = new AbortController();
+    state.chatAbort = controller;
+    let renderFrame = 0;
+    let reasoningFrame = 0;
+
+    const paintChat = () => {
+      assistant.markdown.innerHTML = renderMarkdown(state.chatRaw);
+      assistant.markdown.hidden = false;
+      assistant.markdown.classList.add('is-streaming');
+    };
+    const paintReasoning = () => {
+      assistant.reasoningBody.textContent = state.chatReasoning;
+      assistant.reasoningCount.textContent = Array.from(state.chatReasoning).length.toLocaleString('zh-CN') + ' 字';
+    };
+    const onDelta = (delta) => {
+      if (version !== state.conversationVersion || !delta) return;
+      if (!state.chatRaw.trim()) {
+        if (assistant.typing) assistant.typing.hidden = true;
+        if (state.chatReasoning) {
+          assistant.reasoningBox.classList.remove('is-thinking');
+          assistant.reasoningLabel.textContent = '深度思考完成';
+        }
+      }
+      state.chatRaw += delta;
+      if (!renderFrame) {
+        renderFrame = requestAnimationFrame(() => {
+          renderFrame = 0;
+          paintChat();
+        });
+      }
+    };
+    const onReasoning = (delta) => {
+      if (version !== state.conversationVersion || !delta || state.chatRaw.trim()) return;
+      state.chatReasoning += delta;
+      assistant.reasoningBox.hidden = false;
+      assistant.reasoningBox.classList.add('is-thinking');
+      assistant.reasoningLabel.textContent = '深度思考中…';
+      assistant.typingText.textContent = '正在深度思考…';
+      if (!reasoningFrame) {
+        reasoningFrame = requestAnimationFrame(() => {
+          reasoningFrame = 0;
+          paintReasoning();
+        });
+      }
+    };
+    const onUsage = (raw) => {
+      if (version !== state.conversationVersion) return;
+      handleChatUsage(raw);
+    };
+
+    (async () => {
+      try {
+        await sendChatCompletion(requestMessages, {
+          onDelta,
+          onReasoning,
+          onUsage,
+          signal: controller.signal
+        });
+        if (version !== state.conversationVersion) return;
+        if (renderFrame) cancelAnimationFrame(renderFrame);
+        if (reasoningFrame) cancelAnimationFrame(reasoningFrame);
+        renderFrame = 0;
+        reasoningFrame = 0;
+        if (!state.chatRaw.trim()) throw new Error('模型没有返回内容。');
+        fillAssistantShell(assistant, state.chatRaw, state.chatReasoning);
+        state.llmMessages.push({
+          role: 'assistant',
+          content: state.chatRaw,
+          reasoning: state.chatReasoning
+        });
+        state.llmMessages = trimLLMMessages(state.llmMessages);
+        recordUsageTurn({
+          content: state.chatRaw,
+          reasoning: state.chatReasoning,
+          promptText: state.chatPromptText,
+          usage: state.chatUsage,
+          quoteText: state.aiQuoteText,
+          kind: '对话'
+        });
+        if (state.conversationSaved) saveCurrentConversation(false);
+        updateSaveButton();
+      } catch (error) {
+        if (renderFrame) cancelAnimationFrame(renderFrame);
+        if (reasoningFrame) cancelAnimationFrame(reasoningFrame);
+        renderFrame = 0;
+        reasoningFrame = 0;
+        if (version !== state.conversationVersion) return;
+        if (error.name === 'AbortError') {
+          const index = state.llmMessages.indexOf(userMessage);
+          if (index >= 0) state.llmMessages.splice(index, 1);
+          userEl.remove();
+          assistant.wrap.remove();
+          return;
+        }
+        const index = state.llmMessages.indexOf(userMessage);
+        if (index >= 0) state.llmMessages.splice(index, 1);
+        userEl.remove();
+        assistant.wrap.remove();
+        els.chatInput.value = text;
+        resizeChatInput();
+        toast('回复失败：' + (error.message || '请稍后再试'));
+      } finally {
+        if (version === state.conversationVersion) {
+          state.chatAbort = null;
+          setChatBusy(false);
+          if (els.chatThread.children.length === 0) els.chatThread.hidden = true;
+          updateSaveButton();
+        }
+      }
+    })();
+  }
+
+  els.chatForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    startChatTurn();
+  });
+  els.chatInput.addEventListener('input', () => {
+    updateChatSendState();
+    resizeChatInput();
+  });
+  els.chatInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      startChatTurn();
+    }
+  });
+  els.aiSaveBtn.addEventListener('click', () => saveCurrentConversation(true));
+
+  function resetAIPanel() {
+    state.aiReasoning = '';
+    if (state.aiReasoningFrame) {
+      cancelAnimationFrame(state.aiReasoningFrame);
+      state.aiReasoningFrame = 0;
+    }
+    els.aiLoading.hidden = false;
+    els.aiError.hidden = true;
+    els.aiContent.hidden = true;
+    els.aiContent.innerHTML = '';
+    els.aiContent.classList.remove('is-streaming');
+    els.aiCopyBtn.disabled = true;
+    els.aiLive.hidden = false;
+    els.aiLiveText.textContent = deepThinkEnabled() ? '思考中' : '生成中';
+    els.thinkingText.textContent = deepThinkEnabled()
+      ? '正在深度思考…'
+      : (hasMoodContext() ? '正在读这一句和你的心境…' : '正在读这一句…');
+    els.reasoningBox.hidden = true;
+    els.reasoningBox.open = false;
+    els.reasoningBox.classList.remove('is-thinking');
+    els.reasoningLabel.textContent = '深度思考中…';
+    els.reasoningCount.textContent = '';
+    els.reasoningText.textContent = '';
+    els.aiErrorRetry.disabled = false;
+    state.llmMessages = [];
+    state.conversationSaved = false;
+    state.chatBusy = false;
+    state.chatRaw = '';
+    state.chatReasoning = '';
+    state.chatUsage = null;
+    els.chatThread.innerHTML = '';
+    els.chatThread.hidden = true;
+    els.chatForm.hidden = true;
+    els.chatInput.value = '';
+    els.chatInput.disabled = false;
+    els.chatSend.disabled = true;
+    resizeChatInput();
+    updateSaveButton();
+    resetAIUsageTag();
+  }
+
+  function showAIError(title, message) {
+    if (state.aiStreaming) return;
+    els.aiLoading.hidden = true;
+    els.aiContent.hidden = true;
+    els.aiError.hidden = false;
+    els.aiErrorTitle.textContent = title || '解读失败';
+    els.aiErrorText.textContent = message || '请稍后重试。';
+    els.aiLive.hidden = true;
+    els.aiCopyBtn.disabled = true;
+    els.aiRetryBtn.disabled = false;
+    resetAIUsageTag();
+    if (state.aiReasoning) {
+      els.reasoningBox.hidden = false;
+      els.reasoningBox.classList.remove('is-thinking');
+      els.reasoningLabel.textContent = '深度思考已结束';
+    }
+  }
+
+  function finishAI() {
+    state.aiStreaming = false;
+    if (state.aiRenderFrame) {
+      cancelAnimationFrame(state.aiRenderFrame);
+      state.aiRenderFrame = 0;
+    }
+    if (state.aiReasoningFrame) {
+      cancelAnimationFrame(state.aiReasoningFrame);
+      state.aiReasoningFrame = 0;
+    }
+    els.aiLive.hidden = true;
+    els.aiRetryBtn.disabled = false;
+    els.aiCopyBtn.disabled = !state.aiRaw.trim();
+    els.aiContent.classList.remove('is-streaming');
+    if (state.aiReasoning) {
+      els.reasoningBox.hidden = false;
+      els.reasoningBox.classList.remove('is-thinking');
+      els.reasoningLabel.textContent = '深度思考完成';
+      paintReasoning();
+    }
+    if (state.aiRaw.trim()) {
+      els.aiContent.innerHTML = renderMarkdown(state.aiRaw);
+      els.aiContent.hidden = false;
+      els.aiLoading.hidden = true;
+      els.aiError.hidden = true;
+    }
+  }
+
+  function scheduleAIRender() {
+    if (state.aiRenderFrame) return;
+    state.aiRenderFrame = requestAnimationFrame(() => {
+      state.aiRenderFrame = 0;
+      els.aiContent.innerHTML = renderMarkdown(state.aiRaw);
+      els.aiContent.hidden = false;
+      els.aiContent.classList.add('is-streaming');
+      els.aiLoading.hidden = true;
+      els.aiError.hidden = true;
+    });
+  }
+
+  function paintReasoning() {
+    els.reasoningText.textContent = state.aiReasoning;
+    const count = Array.from(state.aiReasoning).length;
+    els.reasoningCount.textContent = count ? count.toLocaleString('zh-CN') + ' 字' : '';
+  }
+
+  function scheduleReasoningRender() {
+    if (state.aiReasoningFrame) return;
+    state.aiReasoningFrame = requestAnimationFrame(() => {
+      state.aiReasoningFrame = 0;
+      paintReasoning();
+    });
+  }
+
+  function pushReasoningDelta(text) {
+    if (!text || state.aiRaw.trim()) return;
+    state.aiReasoning += text;
+    els.reasoningBox.hidden = false;
+    els.reasoningBox.classList.add('is-thinking');
+    els.reasoningLabel.textContent = '深度思考中…';
+    els.aiLiveText.textContent = '思考中';
+    els.thinkingText.textContent = '正在深度思考…';
+    scheduleReasoningRender();
+  }
+
+  function pushAIDelta(text) {
+    if (!text) return;
+    if (!state.aiRaw.trim()) {
+      els.aiLiveText.textContent = '生成中';
+      els.thinkingText.textContent = '正在落笔…';
+      if (state.aiReasoning) {
+        els.reasoningBox.classList.remove('is-thinking');
+        els.reasoningLabel.textContent = '深度思考完成';
+      }
+    }
+    state.aiRaw += text;
+    els.aiCopyBtn.disabled = state.aiRaw.trim().length === 0;
+    scheduleAIRender();
+  }
+
+  function buildSystemPrompt() {
+    const length = currentLength();
+    const withMood = hasMoodContext();
+    const heavy = isHeavyMoodContext();
+    let structure;
+    if (withMood) {
+      if (settings.length === 'free') {
+        structure = '篇幅不限，但保持朋友聊天的感觉；不要为了完整而写成文章，也不要为了凑长度重复。';
+      } else if (settings.length === 'short') {
+        structure = '写成 2 至 4 句自然的回应，约 ' + length.chars + ' 个汉字，不要分点。';
+      } else if (settings.length === 'long') {
+        structure = '写成 3 至 5 个短段落，约 ' + length.chars + ' 个汉字；可以有层次，但不要用标题和列表。';
+      } else {
+        structure = '写成 2 至 3 个短段落，约 ' + length.chars + ' 个汉字；不要用标题和列表。';
+      }
+    } else if (settings.length === 'free') {
+      structure = '篇幅不限。写到把意思说完整为止，不要为了凑长度重复，也不要因为字数省略必要的解释。';
+    } else if (settings.length === 'short') {
+      structure = '写成 1 至 2 个自然段，不要使用小标题，约 ' + length.chars + ' 个汉字。';
+    } else if (settings.length === 'long') {
+      structure = '分成 2 至 3 个有内在递进的小节，可用二级或三级标题组织，约 ' + length.chars + ' 个汉字。';
+    } else {
+      structure = '写成 2 至 3 个自然段，可以穿插一个克制的小标题，约 ' + length.chars + ' 个汉字。';
+    }
+    const focusRule = withMood
+      ? '1. 这次用户已经写下了自己的心境和最近遇到的事。请把重点放在“陪他聊”上，而不是解释句子。句子只是一个话头；不要逐字讲解、不要分析意象修辞、不要像老师上课。'
+      : '1. 这次用户没有提供个人背景。请先解释这句话的字面意思、关键意象或转折，再谈它为什么成立、可能启发什么；不要虚构用户的经历。';
+    const moodRule = withMood
+      ? (heavy
+          ? '3. 用户此刻的情绪似乎比较糟糕。先温柔地接住他的感受，不要急着解释句子，更不要上课或讲道理；语气放慢、放软，不要评判、说教、催促他振作，也不要强行给出积极结论；不要说“想开点”“别多想”“这没什么”这类轻飘飘的安慰。'
+          : '3. 把句子轻轻放回他的处境里，更多回应他的感受和事情本身，而不是逐句赏析。若背景与句子并不贴合，可以温和地说明，不必强行联系。')
+      : '3. 不要做空泛的文学赏析，要具体、有洞察；不要灌鸡汤。';
+    const styleRule = withMood
+      ? '4. 像朋友聊天一样自然：用“你”直接说话，短段落、口语一点；可以分享轻轻的观察，但不要虚构自己的真实经历，不要列知识清单，不要用“首先/其次/综上所述”，不要用“意象/修辞/主题”这类讲课词。'
+      : '4. 语气温和、克制，像一起读一句话，而不是做课堂报告。';
+    const endingRule = withMood
+      ? (heavy
+          ? '6. 结尾只需要一句轻柔的陪伴，或一个很轻的问题；不要急着给建议，也不要总结陈词。'
+          : '6. 结尾像朋友一样接一句，或留一个轻问题；不要总结陈词。')
+      : '6. 结尾留一个温和的思考角度、一个问题，或一个可以尝试的小动作；不要灌鸡汤，不要假装给出标准答案。';
+    return [
+      '你是一位安静、敏锐、有文学素养的共读者。用户会给你一句话，请陪他往下想一想。',
+      '要求：',
+      focusRule,
+      '2. 无论用户情绪如何，都不要说这句话不好、不成立、太消极或太矫情；即使它偏消极，也先理解它为什么会在此时被需要。',
+      moodRule,
+      styleRule,
+      '5. 如果用户的内容暗示自伤、危机或需要专业帮助，请温和地建议他联系身边信任的人或当地心理援助，不要继续做文学分析。',
+      endingRule,
+      withMood
+        ? '7. 使用 Markdown 排版：以自然段落为主，不要使用小标题和列表；可以少量加粗。'
+        : '7. 使用 Markdown 排版：可用小标题、加粗、引用、列表；不要使用一级标题，不要输出代码块。',
+      '8. ' + structure,
+      '9. 只输出正文，不要加“好的”“以下是”之类的开场白。'
+    ].join('\n');
+  }
+
+  function buildUserPrompt(quote) {
+    const meta = quoteMetaText(quote);
+    const lines = ['句子：' + quote.text, '出处：' + meta];
+    if (hasMoodContext()) {
+      if (moodContext.moods.length) lines.push('此刻的心境：' + moodContext.moods.join('、'));
+      if (moodContext.event.trim()) lines.push('最近遇到的事：' + moodContext.event.trim());
+      lines.push('', '请像朋友聊天一样，结合这些背景聊聊这句话，不用逐句解释。');
+    } else {
+      lines.push('', '请解读这句话。');
+    }
+    return lines.join('\n');
+  }
+
+  function parseAPIError(status, bodyText) {
+    let detail = '';
+    try {
+      const data = JSON.parse(bodyText);
+      detail = data?.error?.message || data?.message || data?.detail || '';
+    } catch (_) {
+      detail = String(bodyText || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 180);
+    }
+    if (status === 401) return 'API Key 无效或已过期。请到设置中检查 Key。';
+    if (status === 403) return '接口拒绝访问（403）。请检查 Key 的权限或模型是否可用。';
+    if (status === 404) return '接口地址不存在（404）。请检查 API 地址是否需要包含 /v1。';
+    if (status === 429) return '请求过于频繁或额度不足（429）。请稍后再试。';
+    if (status >= 500) return '模型服务暂时不可用（' + status + '）。请稍后重试。';
+    return detail ? detail.slice(0, 220) : '请求失败（HTTP ' + status + '）。';
+  }
+
+  async function readSSE(response, onDelta, onReasoning, onUsage) {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    let finished = false;
+    let sawData = false;
+
+    const handleLine = (line) => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith(':')) return;
+      if (!trimmed.startsWith('data:')) return;
+      const data = trimmed.slice(5).trim();
+      if (!data) return;
+      if (data === '[DONE]') { finished = true; return; }
+      sawData = true;
+      let json;
+      try { json = JSON.parse(data); } catch (_) { return; }
+      if (json.error) throw new Error(json.error.message || '模型返回错误');
+      if (json.usage && onUsage) onUsage(json.usage);
+      const choice = json.choices && json.choices[0];
+      const reasoning = choice?.delta?.reasoning_content ?? choice?.message?.reasoning_content ?? '';
+      if (typeof reasoning === 'string' && reasoning && onReasoning) onReasoning(reasoning);
+      const delta = choice?.delta?.content ?? choice?.text ?? choice?.message?.content ?? '';
+      if (typeof delta === 'string' && delta) onDelta(delta);
+    };
+
+    while (!finished) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split(/\r?\n/);
+      buffer = lines.pop() ?? '';
+      for (const line of lines) {
+        handleLine(line);
+        if (finished) break;
+      }
+    }
+    if (buffer.trim()) handleLine(buffer);
+  }
+
+  function buildRequestPayload(messages) {
+    const length = currentLength();
+    const deep = deepThinkEnabled();
+    const payload = {
+      model: settings.model,
+      messages,
+      temperature: 0.82,
+      stream: true,
+      stream_options: { include_usage: true }
+    };
+    if (Number.isFinite(length.maxTokens)) payload.max_tokens = length.maxTokens;
+    if (deepThinkAvailable(settings.endpoint, settings.model)) {
+      if (isDeepSeekEndpoint(settings.endpoint)) {
+        // DeepSeek 官方接口的思考模式默认可能是开启的，所以显式传入开关。
+        payload.thinking = { type: deep ? 'enabled' : 'disabled' };
+      } else if (deep) {
+        // 第三方中转里以 deepseek 开头的模型：只在开启时附加参数，避免影响默认行为。
+        payload.thinking = { type: 'enabled' };
+      }
+      if (deep) {
+        payload.reasoning_effort = 'high';
+        if (Number.isFinite(length.maxTokens)) {
+          payload.max_tokens = length.maxTokens + 2048;
+        }
+        delete payload.temperature;
+      }
+    }
+    return payload;
+  }
+
+  async function sendChatCompletion(messages, { onDelta, onReasoning, onUsage, signal }) {
+    const endpoint = normalizeEndpoint(settings.endpoint);
+    const headers = { 'Content-Type': 'application/json', 'Accept': 'text/event-stream, application/json' };
+    if (settings.apiKey) headers.Authorization = 'Bearer ' + settings.apiKey;
+    const payload = buildRequestPayload(messages);
+    const send = (body) => fetch(endpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+      signal,
+      cache: 'no-store'
+    });
+
+    let response;
+    try {
+      response = await send(payload);
+    } catch (error) {
+      if (error.name === 'AbortError') throw error;
+      throw new Error('网络或跨域请求失败。请检查接口地址、网络连接，以及该服务是否允许浏览器直接访问。');
+    }
+
+    if (!response.ok) {
+      let text = '';
+      try { text = await response.text(); } catch (_) {}
+      // 少数中转不支持 stream_options；去掉该字段重试一次，用量随后退回估算。
+      if ((response.status === 400 || response.status === 422) &&
+          payload.stream_options &&
+          /stream_options|include_usage|extra inputs|unknown (field|parameter)/i.test(text)) {
+        const fallbackPayload = { ...payload };
+        delete fallbackPayload.stream_options;
+        try {
+          response = await send(fallbackPayload);
+        } catch (error) {
+          if (error.name === 'AbortError') throw error;
+          throw new Error('网络或跨域请求失败。请检查接口地址、网络连接，以及该服务是否允许浏览器直接访问。');
+        }
+        if (!response.ok) {
+          try { text = await response.text(); } catch (_) {}
+          throw new Error(parseAPIError(response.status, text));
+        }
+      } else {
+        throw new Error(parseAPIError(response.status, text));
+      }
+    }
+
+    const contentType = (response.headers.get('content-type') || '').toLowerCase();
+    if (contentType.includes('application/json')) {
+      const data = await response.json();
+      if (data.usage && onUsage) onUsage(data.usage);
+      const choice = data.choices && data.choices[0];
+      const reasoning = choice?.message?.reasoning_content ?? choice?.message?.reasoning ?? '';
+      if (typeof reasoning === 'string' && reasoning && onReasoning) onReasoning(reasoning);
+      let content = choice?.message?.content ?? choice?.text ?? '';
+      if (Array.isArray(content)) content = content.map((part) => part?.text || '').join('');
+      if (!content) throw new Error('接口返回为空，请检查模型名称或接口协议。');
+      if (onDelta) onDelta(content);
+      return;
+    }
+
+    if (!response.body) throw new Error('当前浏览器无法读取流式响应。');
+    await readSSE(response, onDelta, onReasoning, onUsage);
+  }
+
+  async function startAnalysis() {
+    if (!state.quote) return;
+    if (!settings.endpoint) {
+      openSettings();
+      els.endpointInput.focus();
+      toast('请先填写 AI 接口地址');
+      return;
+    }
+    if (!settings.model) {
+      openSettings();
+      els.modelInput.focus();
+      toast('请先填写模型名称');
+      return;
+    }
+
+    if (state.aiAbort) {
+      try { state.aiAbort.abort(); } catch (_) {}
+      state.aiAbort = null;
+    }
+    if (state.chatAbort) {
+      try { state.chatAbort.abort(); } catch (_) {}
+      state.chatAbort = null;
+    }
+    if (state.aiRenderFrame) {
+      cancelAnimationFrame(state.aiRenderFrame);
+      state.aiRenderFrame = 0;
+    }
+    if (state.aiReasoningFrame) {
+      cancelAnimationFrame(state.aiReasoningFrame);
+      state.aiReasoningFrame = 0;
+    }
+
+    state.conversationVersion++;
+    const version = state.conversationVersion;
+    state.aiRaw = '';
+    state.aiReasoning = '';
+    state.aiUsage = null;
+    state.aiUsageFromApi = false;
+    state.aiPromptText = '';
+    state.aiQuoteText = state.quote.text;
+    state.aiStreaming = true;
+    state.aiOpen = true;
+    els.aiPanel.hidden = false;
+    els.aiRetryBtn.disabled = true;
+    els.aiCopyBtn.disabled = true;
+    updateAIMeta();
+    resetAIPanel();
+    resetAIUsageTag();
+    els.aiPanel.hidden = false;
+
+    const systemPrompt = buildSystemPrompt();
+    const userPrompt = buildUserPrompt(state.quote);
+    state.llmMessages = [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ];
+    state.aiPromptText = systemPrompt + '\n' + userPrompt;
+    updateSaveButton();
+
+    const controller = new AbortController();
+    state.aiAbort = controller;
+    requestAnimationFrame(() => {
+      els.aiPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    try {
+      await sendChatCompletion(state.llmMessages, {
+        onDelta: pushAIDelta,
+        onReasoning: pushReasoningDelta,
+        onUsage: handleAIUsage,
+        signal: controller.signal
+      });
+      if (version !== state.conversationVersion) return;
+      if (!state.aiRaw.trim()) {
+        throw new Error('模型没有返回可显示的内容，请检查接口或模型设置。');
+      }
+      finishAI();
+      state.llmMessages.push({
+        role: 'assistant',
+        content: state.aiRaw,
+        reasoning: state.aiReasoning
+      });
+      state.llmMessages = trimLLMMessages(state.llmMessages);
+      recordUsageTurn({
+        content: state.aiRaw,
+        reasoning: state.aiReasoning,
+        promptText: state.aiPromptText,
+        usage: state.aiUsage,
+        quoteText: state.aiQuoteText,
+        kind: '解读'
+      });
+      showChatComposer();
+      updateSaveButton();
+    } catch (error) {
+      if (version !== state.conversationVersion) return;
+      if (error.name === 'AbortError') {
+        state.aiStreaming = false;
+        return;
+      }
+      state.aiStreaming = false;
+      showAIError('解读失败', error.message || '请稍后重试。');
+      els.chatForm.hidden = true;
+      updateSaveButton();
+    } finally {
+      if (state.aiAbort === controller) state.aiAbort = null;
+    }
+  }
+
+  function closeAIPanel() {
+    if (state.aiAbort) {
+      try { state.aiAbort.abort(); } catch (_) {}
+      state.aiAbort = null;
+    }
+    if (state.chatAbort) {
+      try { state.chatAbort.abort(); } catch (_) {}
+      state.chatAbort = null;
+    }
+    state.aiStreaming = false;
+    state.aiOpen = false;
+    els.aiPanel.hidden = true;
+  }
+
+  els.aiBtn.addEventListener('click', handleAIButton);
+  els.aiRetryBtn.addEventListener('click', startAnalysis);
+  els.aiErrorRetry.addEventListener('click', startAnalysis);
+  els.aiErrorSettings.addEventListener('click', () => openSettings());
+  els.aiCloseBtn.addEventListener('click', closeAIPanel);
+
+  els.aiCopyBtn.addEventListener('click', async () => {
+    const assistantTexts = state.llmMessages
+      .filter((message) => message.role === 'assistant')
+      .map((message) => message.content);
+    const text = assistantTexts.length ? assistantTexts.join('\n\n---\n\n') : els.aiContent.innerText.trim();
+    if (!text) return;
+    const ok = await copyText(text);
+    toast(ok ? '已复制 AI 解读' : '复制失败，请手动选择文本');
+  });
+
+  /* ============================== 设置 ============================== */
+  function setSelectedProvider(provider, applyPreset) {
+    selectedProvider = PRESETS[provider] ? provider : 'custom';
+    $$('.chip', els.providerRow).forEach((chip) => {
+      chip.classList.toggle('active', chip.dataset.provider === selectedProvider);
+    });
+    if (applyPreset && PRESETS[selectedProvider].endpoint) {
+      els.endpointInput.value = PRESETS[selectedProvider].endpoint;
+      els.modelInput.value = PRESETS[selectedProvider].model;
+      els.endpointInput.classList.remove('invalid');
+      els.modelInput.classList.remove('invalid');
+    }
+    syncDeepModelUI();
+    syncDeepThinkUI();
+  }
+
+  function syncDeepModelUI() {
+    const official = isDeepSeekEndpoint(els.endpointInput.value);
+    els.deepModelRow.hidden = !official;
+    const model = els.modelInput.value.trim().toLowerCase();
+    $$('.deep-model-card', els.deepModelRow).forEach((card) => {
+      const active = official && model === card.dataset.deepModel.toLowerCase();
+      card.classList.toggle('active', active);
+      card.setAttribute('aria-pressed', String(active));
+    });
+  }
+
+  function syncDeepThinkUI() {
+    const available = deepThinkAvailable(els.endpointInput.value, els.modelInput.value);
+    els.thinkBox.hidden = !available;
+    els.thinkToggle.setAttribute('aria-checked', String(available && selectedDeepThink));
+    els.thinkBox.classList.toggle('active', available && selectedDeepThink);
+  }
+
+  function setSelectedLength(length) {
+    selectedLength = LENGTHS[length] ? length : 'medium';
+    $$('.length-card', els.lengthGrid).forEach((card) => {
+      card.classList.toggle('active', card.dataset.length === selectedLength);
+    });
+  }
+
+  function setTestStatus(message, kind) {
+    els.testStatus.textContent = message || '';
+    els.testStatus.className = 'test-status' + (kind ? ' ' + kind : '');
+  }
+
+  function populateSettingsForm() {
+    els.endpointInput.value = settings.endpoint || '';
+    els.modelInput.value = settings.model || '';
+    els.keyInput.value = settings.apiKey || '';
+    els.hitokotoInput.value = settings.hitokotoEndpoint || '';
+    els.keyInput.type = 'password';
+    els.revealKey.setAttribute('aria-label', '显示 API Key');
+    els.revealKey.innerHTML = '<svg class="icon"><use href="#i-eye"></use></svg>';
+    els.endpointInput.classList.remove('invalid');
+    els.modelInput.classList.remove('invalid');
+    selectedDeepThink = !!settings.deepThink;
+    setSelectedLength(settings.length);
+    setSelectedProvider(settings.provider, false);
+    syncDeepModelUI();
+    syncDeepThinkUI();
+    setTestStatus('', '');
+  }
+
+  function openSettings() {
+    if (state.modalOpen || state.moodOpen || state.usageOpen || state.historyOpen) return;
+    state.modalOpen = true;
+    populateSettingsForm();
+    els.overlay.hidden = false;
+    els.settingsBody.scrollTop = 0;
+    document.body.classList.add('modal-open');
+    setTimeout(() => {
+      els.settingsBody.scrollTop = 0;
+      els.endpointInput.focus({ preventScroll: true });
+    }, 80);
+  }
+
+  function closeSettings() {
+    if (!state.modalOpen) return;
+    state.modalOpen = false;
+    els.overlay.hidden = true;
+    document.body.classList.remove('modal-open');
+    setTestStatus('', '');
+  }
+
+  function validateSettingsForm() {
+    let ok = true;
+    const endpoint = els.endpointInput.value.trim();
+    const model = els.modelInput.value.trim();
+    const hitokoto = els.hitokotoInput.value.trim();
+
+    els.endpointInput.classList.remove('invalid');
+    els.modelInput.classList.remove('invalid');
+    els.hitokotoInput.classList.remove('invalid');
+
+    if (!endpoint) {
+      els.endpointInput.classList.add('invalid');
+      els.endpointInput.focus();
+      toast('请填写 API 地址');
+      ok = false;
+    } else {
+      try {
+        normalizeEndpoint(endpoint);
+      } catch (_) {
+        els.endpointInput.classList.add('invalid');
+        els.endpointInput.focus();
+        toast('API 地址格式不正确');
+        ok = false;
+      }
+    }
+
+    if (ok && !model) {
+      els.modelInput.classList.add('invalid');
+      els.modelInput.focus();
+      toast('请填写模型名称');
+      ok = false;
+    }
+
+    if (ok && hitokoto) {
+      try {
+        if (!/^https?:\/\//i.test(hitokoto)) throw new Error('bad');
+        new URL(hitokoto);
+      } catch (_) {
+        els.hitokotoInput.classList.add('invalid');
+        toast('一言接口地址格式不正确');
+        ok = false;
+      }
+    }
+    return ok;
+  }
+
+  function commitSettings() {
+    if (!validateSettingsForm()) return;
+    const next = {
+      provider: selectedProvider,
+      endpoint: els.endpointInput.value.trim(),
+      model: els.modelInput.value.trim(),
+      apiKey: els.keyInput.value.trim(),
+      length: selectedLength,
+      deepThink: selectedDeepThink,
+      customInputPrice: settings.customInputPrice || 0,
+      customOutputPrice: settings.customOutputPrice || 0,
+      hitokotoEndpoint: els.hitokotoInput.value.trim() || DEFAULT_SETTINGS.hitokotoEndpoint
+    };
+    settings = next;
+    const saved = saveSettingsToStorage(next);
+    closeSettings();
+    updateAIMeta();
+    toast(saved ? '设置已保存' : '已应用设置（浏览器禁止持久化）');
+  }
+
+  els.settingsBtn.addEventListener('click', openSettings);
+  els.settingsClose.addEventListener('click', closeSettings);
+  els.cancelBtn.addEventListener('click', closeSettings);
+  els.saveBtn.addEventListener('click', commitSettings);
+  els.overlay.addEventListener('mousedown', (event) => {
+    if (event.target === els.overlay) closeSettings();
+  });
+
+  els.providerRow.addEventListener('click', (event) => {
+    const chip = event.target.closest('.chip');
+    if (!chip) return;
+    setSelectedProvider(chip.dataset.provider, true);
+    setTestStatus('', '');
+  });
+
+  [els.endpointInput, els.modelInput].forEach((input) => {
+    input.addEventListener('input', () => {
+      const detected = detectProvider(els.endpointInput.value.trim(), els.modelInput.value.trim());
+      if (selectedProvider !== 'custom') {
+        selectedProvider = 'custom';
+        $$('.chip', els.providerRow).forEach((chip) => {
+          chip.classList.toggle('active', chip.dataset.provider === 'custom');
+        });
+      } else if (detected !== 'custom') {
+        // 保持自定义，不自动抢回预设
+      }
+      input.classList.remove('invalid');
+      syncDeepModelUI();
+      syncDeepThinkUI();
+      setTestStatus('', '');
+    });
+  });
+
+  els.deepModelRow.addEventListener('click', (event) => {
+    const card = event.target.closest('.deep-model-card');
+    if (!card) return;
+    els.modelInput.value = card.dataset.deepModel;
+    els.modelInput.classList.remove('invalid');
+    syncDeepModelUI();
+    syncDeepThinkUI();
+    setTestStatus('', '');
+  });
+
+  els.thinkToggle.addEventListener('click', () => {
+    selectedDeepThink = !selectedDeepThink;
+    syncDeepThinkUI();
+  });
+
+  els.lengthGrid.addEventListener('click', (event) => {
+    const card = event.target.closest('.length-card');
+    if (!card) return;
+    setSelectedLength(card.dataset.length);
+  });
+
+  els.revealKey.addEventListener('click', () => {
+    const showing = els.keyInput.type === 'text';
+    els.keyInput.type = showing ? 'password' : 'text';
+    els.revealKey.setAttribute('aria-label', showing ? '显示 API Key' : '隐藏 API Key');
+    els.revealKey.innerHTML = '<svg class="icon"><use href="#i-' + (showing ? 'eye' : 'eye-off') + '"></use></svg>';
+    if (!showing) els.keyInput.focus({ preventScroll: true });
+  });
+
+  els.resetBtn.addEventListener('click', () => {
+    els.endpointInput.value = DEFAULT_SETTINGS.endpoint;
+    els.modelInput.value = DEFAULT_SETTINGS.model;
+    els.keyInput.value = '';
+    els.hitokotoInput.value = DEFAULT_SETTINGS.hitokotoEndpoint;
+    selectedDeepThink = DEFAULT_SETTINGS.deepThink;
+    setSelectedProvider(DEFAULT_SETTINGS.provider, false);
+    setSelectedLength(DEFAULT_SETTINGS.length);
+    syncDeepModelUI();
+    syncDeepThinkUI();
+    setTestStatus('', '');
+    els.endpointInput.classList.remove('invalid');
+    els.modelInput.classList.remove('invalid');
+    els.hitokotoInput.classList.remove('invalid');
+    toast('已恢复默认，点击保存生效');
+  });
+
+  async function testConnection() {
+    const endpointRaw = els.endpointInput.value.trim();
+    const model = els.modelInput.value.trim();
+    const key = els.keyInput.value.trim();
+    if (!endpointRaw || !model) {
+      setTestStatus('请先填写地址与模型', 'err');
+      return;
+    }
+    let endpoint;
+    try {
+      endpoint = normalizeEndpoint(endpointRaw);
+    } catch (_) {
+      setTestStatus('接口地址格式不正确', 'err');
+      return;
+    }
+
+    els.testBtn.disabled = true;
+    setTestStatus('连接中…', '');
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (key) headers.Authorization = 'Bearer ' + key;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          model,
+          messages: [{ role: 'user', content: '只回复：OK' }],
+          max_tokens: 8,
+          stream: false
+        }),
+        signal: controller.signal,
+        cache: 'no-store'
+      });
+      if (!response.ok) {
+        let text = '';
+        try { text = await response.text(); } catch (_) {}
+        throw new Error(parseAPIError(response.status, text));
+      }
+      const data = await response.json();
+      if (data.choices && data.choices.length) {
+        setTestStatus('连接成功 · ' + model, 'ok');
+      } else {
+        setTestStatus('已连接，但返回格式不兼容', 'err');
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        setTestStatus('连接超时，请检查网络或接口', 'err');
+      } else {
+        setTestStatus(error.message || '连接失败', 'err');
+      }
+    } finally {
+      clearTimeout(timer);
+      els.testBtn.disabled = false;
+    }
+  }
+
+  els.testBtn.addEventListener('click', testConnection);
+
+  /* ============================== 键盘 ============================== */
+  document.addEventListener('keydown', (event) => {
+    if (event.isComposing) return;
+    const target = event.target;
+    const typing = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+
+    if (event.key === 'Escape') {
+      if (state.historyOpen) { closeHistory(); return; }
+      if (state.usageOpen) { closeUsage(); return; }
+      if (state.moodOpen) { closeMood(); return; }
+      if (state.modalOpen) { closeSettings(); return; }
+      if (state.aiOpen) { closeAIPanel(); return; }
+      return;
+    }
+
+    if (typing || state.modalOpen || state.moodOpen || state.usageOpen || state.historyOpen) return;
+
+    if ((event.key === 'r' || event.key === 'R') && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      event.preventDefault();
+      loadQuote();
+    }
+  });
+
+  /* ============================== 启动 ============================== */
+  initTheme();
+  updateAIMeta();
+  updateMoodUI();
+  updateUsageSummary();
+  updateSaveButton();
+  updateBackButton();
+  // 页面重新加载时开始新的一句；保存过的旧对话仍在历史里，可随时点回去继续。
+  const first = randomFallback(null);
+  paintQuote(first);
+  loadQuote({ initial: true });
+})();
+</script>
+</body>
+</html>
